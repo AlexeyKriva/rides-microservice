@@ -4,9 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.software.modsen.ridesmicroservice.entities.Driver.Driver;
 import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
+@AllArgsConstructor
 public class RideDto {
     @JsonProperty("passenger_id")
     private long passengerId;
