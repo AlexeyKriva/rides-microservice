@@ -1,0 +1,41 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="versio1-1" author="postgres">
+        <preConditions>
+            <not>
+                <tableExists tableName="ride"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="ride">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="passenger_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_ride_passenger" references="passenger(id)"/>
+            </column>
+            <column name="driver_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_ride_driver" references="driver(id)"/>
+            </column>
+            <column name="from_address" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="to_address" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ride_status" type="varchar(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_date_time" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="decimal(10,2)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
