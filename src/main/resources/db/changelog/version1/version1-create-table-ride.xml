@@ -38,4 +38,18 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="versio1-2" author="postgres">
+        <preConditions>
+            <not>
+                <columnExists tableName="ride" columnName="currency"/>
+            </not>
+        </preConditions>
+
+        <addColumn tableName="ride">
+            <column name="currency" type="varchar(7)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

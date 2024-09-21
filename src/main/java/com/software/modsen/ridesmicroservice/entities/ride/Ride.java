@@ -34,5 +34,8 @@ public class Ride {
     @Column(name = "order_date_time", nullable = false)
     private LocalDateTime orderDateTime;
     @Column(name = "price", nullable = false)
-    private float price;
+    private Float price;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "currency", nullable = false)
+    private Currency currency;
 }

@@ -1,18 +1,20 @@
 package com.software.modsen.ridesmicroservice.entities.ride;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
+@AllArgsConstructor
 public class RidePatchDto {
     @JsonProperty("passenger_id")
-    private long passengerId;
+    private Long passengerId;
     @JsonProperty("driver_id")
-    private long driverId;
+    private Long driverId;
     @JsonProperty("from_address")
     private String fromAddress;
     @JsonProperty("to_address")
@@ -22,5 +24,7 @@ public class RidePatchDto {
     @JsonProperty("order_date_time")
     private LocalDateTime orderDateTime;
     @JsonProperty("price")
-    private float price;
+    private Float price;
+    @JsonProperty("currency")
+    private Currency currency;
 }

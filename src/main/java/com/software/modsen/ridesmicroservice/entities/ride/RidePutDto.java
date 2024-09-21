@@ -1,21 +1,16 @@
 package com.software.modsen.ridesmicroservice.entities.ride;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.software.modsen.ridesmicroservice.entities.Driver.Driver;
-import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
-@ToString
-public class RideDto {
+public class RidePutDto {
     @NotNull(message = "Passenger id cannot be null.")
     @JsonProperty("passenger_id")
     private Long passengerId;
@@ -28,6 +23,9 @@ public class RideDto {
     @NotBlank(message = "Arrival address cannot be blank.")
     @JsonProperty("to_address")
     private String toAddress;
+    @NotNull(message = "Ride status cannot be null.")
+    @JsonProperty("ride_status")
+    private RideStatus rideStatus;
     @NotNull(message = "Order date time cannot be null.")
     @JsonProperty("order_date_time")
     private LocalDateTime orderDateTime;
