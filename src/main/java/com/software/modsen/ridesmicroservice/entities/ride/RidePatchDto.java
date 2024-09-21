@@ -2,6 +2,7 @@ package com.software.modsen.ridesmicroservice.entities.ride;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,7 @@ public class RidePatchDto {
     private String toAddress;
     @JsonProperty("ride_status")
     private RideStatus rideStatus;
+    @PastOrPresent(message = "Date cannot be in the future.")
     @JsonProperty("order_date_time")
     private LocalDateTime orderDateTime;
     @JsonProperty("price")

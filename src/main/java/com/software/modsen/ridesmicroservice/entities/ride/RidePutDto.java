@@ -3,6 +3,7 @@ package com.software.modsen.ridesmicroservice.entities.ride;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -26,6 +27,7 @@ public class RidePutDto {
     @NotNull(message = "Ride status cannot be null.")
     @JsonProperty("ride_status")
     private RideStatus rideStatus;
+    @PastOrPresent(message = "Date cannot be in the future.")
     @NotNull(message = "Order date time cannot be null.")
     @JsonProperty("order_date_time")
     private LocalDateTime orderDateTime;

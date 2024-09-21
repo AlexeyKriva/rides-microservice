@@ -6,6 +6,7 @@ import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -28,6 +29,7 @@ public class RideDto {
     @NotBlank(message = "Arrival address cannot be blank.")
     @JsonProperty("to_address")
     private String toAddress;
+    @PastOrPresent(message = "Date cannot be in the future.")
     @NotNull(message = "Order date time cannot be null.")
     @JsonProperty("order_date_time")
     private LocalDateTime orderDateTime;
