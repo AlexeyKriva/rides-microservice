@@ -2,6 +2,7 @@ package com.software.modsen.ridesmicroservice.controllers;
 
 import com.software.modsen.ridesmicroservice.entities.ride.*;
 import com.software.modsen.ridesmicroservice.services.RideService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,24 +20,31 @@ public class RideController {
         return ResponseEntity.ok(rideService.getAllRides());
     }
 
+    @GetMapping("/not-completed-and-cancelled")
+    private ResponseEntity<List<Ride>> getAllNotCompletedOrCancelledRides() {
+        return ResponseEntity.ok(rideService.getAllNotCompletedAndNotCancelledRides());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Ride> getRideById(@PathVariable("id") long id) {
         return ResponseEntity.ok(rideService.getRideById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Ride> saveRide(@RequestBody RideDto rideDto) {
+    public ResponseEntity<Ride> saveRide(@Valid @RequestBody RideDto rideDto) {
         System.out.println(rideDto);
         return ResponseEntity.ok(rideService.saveRide(rideDto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Ride> updateRideById(@PathVariable("id") long id, @RequestBody RidePutDto ridePutDto) {
+    public ResponseEntity<Ride> updateRideById(@PathVariable("id") long id,
+                                               @Valid @RequestBody RidePutDto ridePutDto) {
         return ResponseEntity.ok(rideService.updateRide(id, ridePutDto));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Ride> patchRideById(@PathVariable("id") long id, @RequestBody RidePatchDto ridePatchDto) {
+    public ResponseEntity<Ride> patchRideById(@PathVariable("id") long id,
+                                              @Valid @RequestBody RidePatchDto ridePatchDto) {
         return ResponseEntity.ok(rideService.patchRide(id, ridePatchDto));
     }
 
