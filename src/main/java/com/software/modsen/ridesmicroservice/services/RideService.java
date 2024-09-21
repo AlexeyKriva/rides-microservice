@@ -76,21 +76,17 @@ public class RideService {
     public Ride updateRide(long id, RidePutDto ridePutDto) {
         ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(ridePutDto.getPassengerId());
         ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(ridePutDto.getDriverId());
-        if (passengerFromDb.getBody() != null && driverFromDb.getBody() != null) {
-            Optional<Ride> rideFromDb = rideRepository.findById(id);
-            if (rideFromDb.isPresent()) {
-                Ride updatingRide = RIDE_MAPPER.fromRidePutDtoToRide(ridePutDto);
-                updatingRide.setId(id);
-                updatingRide.setPassenger(passengerFromDb.getBody());
-                updatingRide.setDriver(driverFromDb.getBody());
+        Optional<Ride> rideFromDb = rideRepository.findById(id);
+        if (rideFromDb.isPresent()) {
+            Ride updatingRide = RIDE_MAPPER.fromRidePutDtoToRide(ridePutDto);
+            updatingRide.setId(id);
+            updatingRide.setPassenger(passengerFromDb.getBody());
+            updatingRide.setDriver(driverFromDb.getBody());
 
-                return rideRepository.save(updatingRide);
-            }
-
-            throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
+            return rideRepository.save(updatingRide);
         }
 
-        return new Ride();
+        throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
     }
 
     public Ride patchRide(long id, RidePatchDto ridePatchDto) {

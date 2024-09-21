@@ -1,5 +1,6 @@
 package com.software.modsen.ridesmicroservice.exceptions;
 
+import feign.FeignException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -75,5 +76,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> httpMessageNotReadableExceptionMessage(HttpMessageNotReadableException
                                                                                  exception) {
         return new ResponseEntity<>(INVALID_JSON_FORMAT, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<String> feignExceptionHandler(FeignException exception) {
+        return new ResponseEntity<>(FEIGN_CANNOT_CONNECT_MESSAGE + exception.contentUTF8(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -11,4 +11,7 @@ public class ExceptionMessage {
             " check the URL and try again.";
     public static final String INVALID_JSON_FORMAT = "Invalid json format.";
     public static final String DATA_INTEGRITY_VIOLENT_MESSAGE = "Not all data entered.";
+    public static final String FEIGN_CANNOT_CONNECT_MESSAGE = "Unsuccessful attempt to connect to the service for" +
+            " passengers or drivers. ";
+
 }
