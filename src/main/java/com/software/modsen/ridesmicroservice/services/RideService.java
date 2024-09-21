@@ -11,11 +11,13 @@ import com.software.modsen.ridesmicroservice.exceptions.RideWasCompletedOrCancel
 import com.software.modsen.ridesmicroservice.mappers.RideMapper;
 import com.software.modsen.ridesmicroservice.repositories.RideRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RideService {
@@ -32,7 +34,11 @@ public class RideService {
     }
 
     public List<Ride> getAllNotCompletedAndNotCancelledRides() {
-        return rideRepository.findAll();
+        return rideRepository.findAll().stream()
+                .filter(ride -> ride.getRideStatus() != RideStatus.COMPLETED
+                        && ride.getRideStatus() != RideStatus.CANCELLED
+                )
+                .collect(Collectors.toList());
     }
 
     public Ride getRideById(long id) {
@@ -94,6 +100,14 @@ public class RideService {
         if (rideFromDb.isPresent()) {
             Ride updatingRide = rideFromDb.get();
             RIDE_MAPPER.updateRideFromRidePatchDto(ridePatchDto, updatingRide);
+            if (ridePatchDto.getPassengerId() != null) {
+                ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(ridePatchDto.getPassengerId());
+                updatingRide.setPassenger(passengerFromDb.getBody());
+            }
+            if (ridePatchDto.getDriverId() != null) {
+                ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(ridePatchDto.getDriverId());
+                updatingRide.setDriver(driverFromDb.getBody());
+            }
 
             return rideRepository.save(updatingRide);
         }

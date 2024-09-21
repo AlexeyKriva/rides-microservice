@@ -30,6 +30,11 @@ public class RideController {
         return ResponseEntity.ok(rideService.getRideById(id));
     }
 
+    @GetMapping("/{id}/not-completed-and-cancelled")
+    private ResponseEntity<Ride> getNotCompletedOrCancelledRidesById(@PathVariable("id") long id) {
+        return ResponseEntity.ok(rideService.getNotCompletedAndNotCancelledRideById(id));
+    }
+
     @PostMapping
     public ResponseEntity<Ride> saveRide(@Valid @RequestBody RideDto rideDto) {
         System.out.println(rideDto);
