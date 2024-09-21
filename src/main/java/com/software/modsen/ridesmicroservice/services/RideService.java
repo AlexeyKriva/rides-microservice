@@ -4,10 +4,7 @@ import com.software.modsen.ridesmicroservice.clients.DriverClient;
 import com.software.modsen.ridesmicroservice.clients.PassengerClient;
 import com.software.modsen.ridesmicroservice.entities.Driver.Driver;
 import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
-import com.software.modsen.ridesmicroservice.entities.ride.Ride;
-import com.software.modsen.ridesmicroservice.entities.ride.RideDto;
-import com.software.modsen.ridesmicroservice.entities.ride.RidePatchDto;
-import com.software.modsen.ridesmicroservice.entities.ride.RideStatus;
+import com.software.modsen.ridesmicroservice.entities.ride.*;
 import com.software.modsen.ridesmicroservice.mappers.RideMapper;
 import com.software.modsen.ridesmicroservice.repositories.RideRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class RideServiceImpl {
+public class RideService {
     @Autowired
     private RideRepository rideRepository;
     @Autowired
@@ -33,10 +30,7 @@ public class RideServiceImpl {
     }
 
     public List<Ride> getAllNotCompletedAndNotCancelledRides() {
-        return rideRepository.findAll().stream()
-                .filter(ride -> (!ride.getRideStatus().equals(RideStatus.COMPLETED) &&
-                !ride.getRideStatus().equals(RideStatus.CANCELLED)))
-                .collect(Collectors.toList());
+        return rideRepository.findAll();
     }
 
     public Ride getRideById(long id) {
@@ -63,17 +57,27 @@ public class RideServiceImpl {
     }
 
     public Ride saveRide(RideDto rideDto) {
-        Ride newRide = RIDE_MAPPER.fromRideDtoToRide(rideDto);
-        return rideRepository.save(newRide);
-    }
-
-    public Ride updateRide(long id, RideDto rideDto) {
         ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(rideDto.getPassengerId());
         ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(rideDto.getDriverId());
         if (passengerFromDb.getBody() != null && driverFromDb.getBody() != null) {
+            Ride newRide = RIDE_MAPPER.fromRideDtoToRide(rideDto);
+            newRide.setPassenger(passengerFromDb.getBody());
+            newRide.setDriver(driverFromDb.getBody());
+            newRide.setRideStatus(RideStatus.CREATED);
+
+            return rideRepository.save(newRide);
+        }
+
+        throw new RuntimeException();
+    }
+
+    public Ride updateRide(long id, RidePutDto ridePutDto) {
+        ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(ridePutDto.getPassengerId());
+        ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(ridePutDto.getDriverId());
+        if (passengerFromDb.getBody() != null && driverFromDb.getBody() != null) {
             Optional<Ride> rideFromDb = rideRepository.findById(id);
             if (rideFromDb.isPresent()) {
-                Ride updatingRide = RIDE_MAPPER.fromRideDtoToRide(rideDto);
+                Ride updatingRide = RIDE_MAPPER.fromRidePutDtoToRide(ridePutDto);
                 updatingRide.setId(id);
                 updatingRide.setPassenger(passengerFromDb.getBody());
                 updatingRide.setDriver(driverFromDb.getBody());
@@ -88,18 +92,12 @@ public class RideServiceImpl {
     }
 
     public Ride patchRide(long id, RidePatchDto ridePatchDto) {
-        ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(ridePatchDto.getPassengerId());
-        ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(ridePatchDto.getDriverId());
-        if (passengerFromDb.getBody() != null && driverFromDb.getBody() != null) {
-            Optional<Ride> rideFromDb = rideRepository.findById(id);
-            if (rideFromDb.isPresent()) {
-                Ride updatingRide = rideFromDb.get();
-                RIDE_MAPPER.updateRideFromRidePatchDto(ridePatchDto, updatingRide);
+        Optional<Ride> rideFromDb = rideRepository.findById(id);
+        if (rideFromDb.isPresent()) {
+            Ride updatingRide = rideFromDb.get();
+            RIDE_MAPPER.updateRideFromRidePatchDto(ridePatchDto, updatingRide);
 
-                return rideRepository.save(updatingRide);
-            }
-
-            throw new RuntimeException();
+            return rideRepository.save(updatingRide);
         }
 
         throw new RuntimeException();
@@ -112,5 +110,13 @@ public class RideServiceImpl {
             ride.setRideStatus(rideStatus);
             return rideRepository.save(ride);
         }).orElseThrow(() -> new RuntimeException());
+    }
+
+    public void deleteRideById(long id) {
+        Optional<Ride> rideFromDb = rideRepository.findById(id);
+        rideFromDb.ifPresentOrElse(
+                ride -> rideRepository.deleteById(id),
+                () -> {throw new RuntimeException();}
+        );
     }
 }
