@@ -31,8 +31,18 @@ public class RideController {
     }
 
     @GetMapping("/{id}/not-completed-and-cancelled")
-    private ResponseEntity<Ride> getNotCompletedOrCancelledRidesById(@PathVariable("id") long id) {
+    public ResponseEntity<Ride> getNotCompletedOrCancelledRidesById(@PathVariable("id") long id) {
         return ResponseEntity.ok(rideService.getNotCompletedAndNotCancelledRideById(id));
+    }
+
+    @GetMapping("/passenger/{id}")
+    public ResponseEntity<List<Ride>> getAllRidesByPassengerId(@PathVariable("id") long passengerId) {
+        return ResponseEntity.ok(rideService.getAllRidesByPassengerId(passengerId));
+    }
+
+    @GetMapping("/driver/{id}")
+    public ResponseEntity<List<Ride>> getAllRidesByDriverId(@PathVariable("id") long driverId) {
+        return ResponseEntity.ok(rideService.getAllRidesByDriverId(driverId));
     }
 
     @PostMapping

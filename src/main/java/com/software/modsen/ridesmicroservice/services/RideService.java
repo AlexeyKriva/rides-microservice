@@ -40,6 +40,14 @@ public class RideService {
                 .collect(Collectors.toList());
     }
 
+    public List<Ride> getAllRidesByPassengerId(long passengerId) {
+        return rideRepository.findAllByPassengerId(passengerId);
+    }
+
+    public List<Ride> getAllRidesByDriverId(long driverId) {
+        return rideRepository.findAllByDriverId(driverId);
+    }
+
     public Ride getRideById(long id) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
         if (rideFromDb.isPresent()) {
