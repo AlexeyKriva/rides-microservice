@@ -1,6 +1,6 @@
 package com.software.modsen.ridesmicroservice.clients;
 
-import com.software.modsen.ridesmicroservice.entities.Driver.Driver;
+import com.software.modsen.ridesmicroservice.entities.driver.Driver;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

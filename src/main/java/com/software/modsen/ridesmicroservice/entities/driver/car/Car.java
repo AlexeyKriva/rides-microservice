@@ -1,4 +1,4 @@
-package com.software.modsen.ridesmicroservice.entities.Driver.car;
+package com.software.modsen.ridesmicroservice.entities.driver.car;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

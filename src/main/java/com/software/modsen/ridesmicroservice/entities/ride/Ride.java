@@ -1,6 +1,6 @@
 package com.software.modsen.ridesmicroservice.entities.ride;
 
-import com.software.modsen.ridesmicroservice.entities.Driver.Driver;
+import com.software.modsen.ridesmicroservice.entities.driver.Driver;
 import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

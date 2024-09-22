@@ -1,4 +1,4 @@
-package com.software.modsen.ridesmicroservice.entities.Driver.car;
+package com.software.modsen.ridesmicroservice.entities.driver.car;
 
 public enum CarBrand {
     ASTON_MARTIN, AUDI, BENTLEY, BMW, BUGATTI, CADILLAC, CHEVROLET, FERRARI, FORD, HONDA, HYUNDAI,

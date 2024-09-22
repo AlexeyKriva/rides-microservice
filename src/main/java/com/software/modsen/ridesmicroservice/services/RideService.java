@@ -3,7 +3,7 @@ package com.software.modsen.ridesmicroservice.services;
 import static com.software.modsen.ridesmicroservice.exceptions.ExceptionMessage.*;
 import com.software.modsen.ridesmicroservice.clients.DriverClient;
 import com.software.modsen.ridesmicroservice.clients.PassengerClient;
-import com.software.modsen.ridesmicroservice.entities.Driver.Driver;
+import com.software.modsen.ridesmicroservice.entities.driver.Driver;
 import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
 import com.software.modsen.ridesmicroservice.entities.ride.*;
 import com.software.modsen.ridesmicroservice.exceptions.RideNotFondException;
@@ -11,7 +11,6 @@ import com.software.modsen.ridesmicroservice.exceptions.RideWasCompletedOrCancel
 import com.software.modsen.ridesmicroservice.mappers.RideMapper;
 import com.software.modsen.ridesmicroservice.repositories.RideRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
