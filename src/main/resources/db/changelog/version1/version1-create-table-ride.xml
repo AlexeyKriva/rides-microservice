@@ -3,7 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="versio1-1" author="postgres">
+    <changeSet id="version1-4" author="postgres">
         <preConditions>
             <not>
                 <tableExists tableName="ride"/>
@@ -38,7 +38,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="versio1-2" author="postgres">
+    <changeSet id="version1-5" author="postgres">
         <preConditions>
             <not>
                 <columnExists tableName="ride" columnName="currency"/>
