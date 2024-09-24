@@ -58,14 +58,10 @@ public class RideService {
     }
 
     public Ride getNotCompletedAndNotCancelledRideById(long id) {
-        Optional<Ride> rideFromDb = rideRepository.findById(id);
+        Optional<Ride> rideFromDb = rideRepository.findByIdAndRideStatus(id, RideStatus.COMPLETED,
+                RideStatus.CANCELLED);
         if (rideFromDb.isPresent()) {
-            if (!rideFromDb.get().getRideStatus().equals(RideStatus.COMPLETED) &&
-                    !rideFromDb.get().getRideStatus().equals(RideStatus.CANCELLED)) {
-                return rideFromDb.get();
-            }
-
-            throw new RideWasCompletedOrCancelled(RIDE_WAS_COMPLETED_OR_CANCELLED);
+            return rideFromDb.get();
         }
 
         throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
