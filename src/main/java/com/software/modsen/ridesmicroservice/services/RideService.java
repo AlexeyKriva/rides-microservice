@@ -9,9 +9,16 @@ import com.software.modsen.ridesmicroservice.entities.ride.*;
 import com.software.modsen.ridesmicroservice.exceptions.RideNotFondException;
 import com.software.modsen.ridesmicroservice.mappers.RideMapper;
 import com.software.modsen.ridesmicroservice.repositories.RideRepository;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +73,9 @@ public class RideService {
         throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
     }
 
+    @Retryable(retryFor = {DataAccessException.class, FeignException.class}, maxAttempts = 5,
+            backoff = @Backoff(delay = 500))
+    @Transactional
     public Ride saveRide(RideDto rideDto) {
         ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(rideDto.getPassengerId());
         ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(rideDto.getDriverId());
@@ -82,6 +92,9 @@ public class RideService {
         return new Ride();
     }
 
+    @Retryable(retryFor = {DataAccessException.class, FeignException.class}, maxAttempts = 5,
+            backoff = @Backoff(delay = 500))
+    @Transactional
     public Ride updateRide(long id, RidePutDto ridePutDto) {
         ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(ridePutDto.getPassengerId());
         ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(ridePutDto.getDriverId());
@@ -100,6 +113,9 @@ public class RideService {
         throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
     }
 
+    @Retryable(retryFor = {DataAccessException.class, FeignException.class}, maxAttempts = 5,
+            backoff = @Backoff(delay = 500))
+    @Transactional
     public Ride patchRide(long id, RidePatchDto ridePatchDto) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
 
@@ -108,7 +124,8 @@ public class RideService {
             RIDE_MAPPER.updateRideFromRidePatchDto(ridePatchDto, updatingRide);
 
             if (ridePatchDto.getPassengerId() != null) {
-                ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(ridePatchDto.getPassengerId());
+                ResponseEntity<Passenger> passengerFromDb =
+                        passengerClient.getPassengerById(ridePatchDto.getPassengerId());
                 updatingRide.setPassenger(passengerFromDb.getBody());
             }
             if (ridePatchDto.getDriverId() != null) {
@@ -122,6 +139,9 @@ public class RideService {
         throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
     }
 
+    @Retryable(retryFor = {DataAccessException.class}, maxAttempts = 5,
+            backoff = @Backoff(delay = 500))
+    @Transactional
     public Ride changeRideStatusById(long id, RideStatus rideStatus) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
 
@@ -131,6 +151,9 @@ public class RideService {
         }).orElseThrow(() -> new RideNotFondException(RIDE_NOT_FOUND_MESSAGE));
     }
 
+    @Retryable(retryFor = {DataAccessException.class}, maxAttempts = 5,
+            backoff = @Backoff(delay = 500))
+    @Transactional
     public void deleteRideById(long id) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
 
@@ -138,5 +161,39 @@ public class RideService {
                 ride -> rideRepository.deleteById(id),
                 () -> {throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);}
         );
+    }
+
+    @Recover
+    public ResponseEntity<String> dataAccessExceptionRecoverForSave(DataAccessException exception,
+                                                                          RideDto rideDto) {
+        return new ResponseEntity<>(CANNOT_SAVE_RIDE_MESSAGE + rideDto.toString(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Recover
+    public ResponseEntity<String> dataAccessExceptionRecoverForPut(DataAccessException exception,
+                                                                    RidePutDto ridePutDto) {
+        return new ResponseEntity<>(CANNOT_PUT_RIDE_MESSAGE + ridePutDto.toString(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Recover
+    public ResponseEntity<String> dataAccessExceptionRecoverForPatch(DataAccessException exception,
+                                                                     RidePatchDto ridePatchDto) {
+        return new ResponseEntity<>(CANNOT_PATCH_RIDE_MESSAGE + ridePatchDto.toString(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Recover
+    public ResponseEntity<String> dataAccessExceptionRecoverForDelete(DataAccessException exception,
+                                                                      long id) {
+        return new ResponseEntity<>(CANNOT_DELETE_RIDE_MESSAGE + id,
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Recover
+    public ResponseEntity<String> feignExceptionRecover(FeignException exception) {
+        return new ResponseEntity<>(FEIGN_CANNOT_CONNECT_MESSAGE + exception.contentUTF8(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
