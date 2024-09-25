@@ -14,19 +14,26 @@ import java.time.LocalDateTime;
 public class RidePatchDto {
     @JsonProperty("passenger_id")
     private Long passengerId;
+
     @JsonProperty("driver_id")
     private Long driverId;
+
     @JsonProperty("from_address")
     private String fromAddress;
+
     @JsonProperty("to_address")
     private String toAddress;
+
     @JsonProperty("ride_status")
     private RideStatus rideStatus;
+
     @PastOrPresent(message = "Date cannot be in the future.")
     @JsonProperty("order_date_time")
     private LocalDateTime orderDateTime;
+
     @JsonProperty("price")
     private Float price;
+
     @JsonProperty("currency")
     private Currency currency;
 }

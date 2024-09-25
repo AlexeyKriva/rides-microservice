@@ -13,7 +13,9 @@ import java.util.Optional;
 @Repository
 public interface RideRepository extends JpaRepository<Ride, Long> {
     List<Ride> findAllByPassengerId(long passengerId);
+
     List<Ride> findAllByDriverId(long passengerId);
+
     @Query("SELECT r FROM Ride r WHERE r.id = :id AND r.rideStatus NOT IN (:completedStatus, :cancelledStatus)")
     Optional<Ride> findByIdAndRideStatus(
             @Param("id") long id,

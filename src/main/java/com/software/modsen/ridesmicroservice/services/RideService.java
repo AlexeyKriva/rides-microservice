@@ -7,10 +7,9 @@ import com.software.modsen.ridesmicroservice.entities.driver.Driver;
 import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
 import com.software.modsen.ridesmicroservice.entities.ride.*;
 import com.software.modsen.ridesmicroservice.exceptions.RideNotFondException;
-import com.software.modsen.ridesmicroservice.exceptions.RideWasCompletedOrCancelled;
 import com.software.modsen.ridesmicroservice.mappers.RideMapper;
 import com.software.modsen.ridesmicroservice.repositories.RideRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +18,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class RideService {
-    @Autowired
     private RideRepository rideRepository;
-    @Autowired
     private PassengerClient passengerClient;
-    @Autowired
     private DriverClient driverClient;
     private final RideMapper RIDE_MAPPER = RideMapper.INSTANCE;
 
@@ -50,6 +47,7 @@ public class RideService {
 
     public Ride getRideById(long id) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
+
         if (rideFromDb.isPresent()) {
             return rideFromDb.get();
         }
@@ -60,6 +58,7 @@ public class RideService {
     public Ride getNotCompletedAndNotCancelledRideById(long id) {
         Optional<Ride> rideFromDb = rideRepository.findByIdAndRideStatus(id, RideStatus.COMPLETED,
                 RideStatus.CANCELLED);
+
         if (rideFromDb.isPresent()) {
             return rideFromDb.get();
         }
@@ -70,6 +69,7 @@ public class RideService {
     public Ride saveRide(RideDto rideDto) {
         ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(rideDto.getPassengerId());
         ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(rideDto.getDriverId());
+
         if (passengerFromDb.getBody() != null && driverFromDb.getBody() != null) {
             Ride newRide = RIDE_MAPPER.fromRideDtoToRide(rideDto);
             newRide.setPassenger(passengerFromDb.getBody());
@@ -85,7 +85,9 @@ public class RideService {
     public Ride updateRide(long id, RidePutDto ridePutDto) {
         ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(ridePutDto.getPassengerId());
         ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(ridePutDto.getDriverId());
+
         Optional<Ride> rideFromDb = rideRepository.findById(id);
+
         if (rideFromDb.isPresent()) {
             Ride updatingRide = RIDE_MAPPER.fromRidePutDtoToRide(ridePutDto);
             updatingRide.setId(id);
@@ -100,9 +102,11 @@ public class RideService {
 
     public Ride patchRide(long id, RidePatchDto ridePatchDto) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
+
         if (rideFromDb.isPresent()) {
             Ride updatingRide = rideFromDb.get();
             RIDE_MAPPER.updateRideFromRidePatchDto(ridePatchDto, updatingRide);
+
             if (ridePatchDto.getPassengerId() != null) {
                 ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(ridePatchDto.getPassengerId());
                 updatingRide.setPassenger(passengerFromDb.getBody());
@@ -129,6 +133,7 @@ public class RideService {
 
     public void deleteRideById(long id) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
+
         rideFromDb.ifPresentOrElse(
                 ride -> rideRepository.deleteById(id),
                 () -> {throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);}
