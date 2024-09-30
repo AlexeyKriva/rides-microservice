@@ -7,15 +7,12 @@ import com.software.modsen.ridesmicroservice.entities.driver.Driver;
 import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
 import com.software.modsen.ridesmicroservice.entities.ride.*;
 import com.software.modsen.ridesmicroservice.exceptions.RideNotFondException;
-import com.software.modsen.ridesmicroservice.mappers.RideMapper;
 import com.software.modsen.ridesmicroservice.repositories.RideRepository;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +27,6 @@ public class RideService {
     private RideRepository rideRepository;
     private PassengerClient passengerClient;
     private DriverClient driverClient;
-    private final RideMapper RIDE_MAPPER = RideMapper.INSTANCE;
 
     public List<Ride> getAllRides() {
         return rideRepository.findAll();
@@ -76,12 +72,11 @@ public class RideService {
     @Retryable(retryFor = {DataAccessException.class, FeignException.class}, maxAttempts = 5,
             backoff = @Backoff(delay = 500))
     @Transactional
-    public Ride saveRide(RideDto rideDto) {
-        ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(rideDto.getPassengerId());
-        ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(rideDto.getDriverId());
+    public Ride saveRide(Long passengerId, Long driverId, Ride newRide) {
+        ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(passengerId);
+        ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(driverId);
 
         if (passengerFromDb.getBody() != null && driverFromDb.getBody() != null) {
-            Ride newRide = RIDE_MAPPER.fromRideDtoToRide(rideDto);
             newRide.setPassenger(passengerFromDb.getBody());
             newRide.setDriver(driverFromDb.getBody());
             newRide.setRideStatus(RideStatus.CREATED);
@@ -95,14 +90,13 @@ public class RideService {
     @Retryable(retryFor = {DataAccessException.class, FeignException.class}, maxAttempts = 5,
             backoff = @Backoff(delay = 500))
     @Transactional
-    public Ride updateRide(long id, RidePutDto ridePutDto) {
-        ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(ridePutDto.getPassengerId());
-        ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(ridePutDto.getDriverId());
+    public Ride updateRide(long id, Long passengerId, Long driverId, Ride updatingRide) {
+        ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(passengerId);
+        ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(driverId);
 
         Optional<Ride> rideFromDb = rideRepository.findById(id);
 
         if (rideFromDb.isPresent()) {
-            Ride updatingRide = RIDE_MAPPER.fromRidePutDtoToRide(ridePutDto);
             updatingRide.setId(id);
             updatingRide.setPassenger(passengerFromDb.getBody());
             updatingRide.setDriver(driverFromDb.getBody());
@@ -116,21 +110,51 @@ public class RideService {
     @Retryable(retryFor = {DataAccessException.class, FeignException.class}, maxAttempts = 5,
             backoff = @Backoff(delay = 500))
     @Transactional
-    public Ride patchRide(long id, RidePatchDto ridePatchDto) {
+    public Ride patchRide(long id, Long passengerId, Long driverId, Ride updatingRide) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
 
         if (rideFromDb.isPresent()) {
-            Ride updatingRide = rideFromDb.get();
-            RIDE_MAPPER.updateRideFromRidePatchDto(ridePatchDto, updatingRide);
+            updatingRide.setId(id);
 
-            if (ridePatchDto.getPassengerId() != null) {
-                ResponseEntity<Passenger> passengerFromDb =
-                        passengerClient.getPassengerById(ridePatchDto.getPassengerId());
-                updatingRide.setPassenger(passengerFromDb.getBody());
+            ResponseEntity<Passenger> passengerFromDb;
+
+            if (passengerId == null) {
+                passengerFromDb = passengerClient.getPassengerById(
+                        rideFromDb.get().getPassenger().getId());
+            } else {
+                passengerFromDb = passengerClient.getPassengerById(passengerId);
             }
-            if (ridePatchDto.getDriverId() != null) {
-                ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(ridePatchDto.getDriverId());
-                updatingRide.setDriver(driverFromDb.getBody());
+
+            updatingRide.setPassenger(passengerFromDb.getBody());
+
+            ResponseEntity<Driver> driverFromDb;
+
+            if (driverId == null) {
+                driverFromDb = driverClient.getDriverById(
+                        rideFromDb.get().getDriver().getId());
+            } else {
+                driverFromDb = driverClient.getDriverById(driverId);
+            }
+
+            updatingRide.setDriver(driverFromDb.getBody());
+
+            if (updatingRide.getFromAddress() == null) {
+                updatingRide.setFromAddress(rideFromDb.get().getFromAddress());
+            }
+            if (updatingRide.getToAddress() == null) {
+                updatingRide.setToAddress(rideFromDb.get().getToAddress());
+            }
+            if (updatingRide.getRideStatus() == null) {
+                updatingRide.setRideStatus(rideFromDb.get().getRideStatus());
+            }
+            if (updatingRide.getOrderDateTime() == null) {
+                updatingRide.setOrderDateTime(rideFromDb.get().getOrderDateTime());
+            }
+            if (updatingRide.getPrice() == null) {
+                updatingRide.setPrice(rideFromDb.get().getPrice());
+            }
+            if (updatingRide.getCurrency() == null) {
+                updatingRide.setCurrency(rideFromDb.get().getCurrency());
             }
 
             return rideRepository.save(updatingRide);
@@ -163,37 +187,17 @@ public class RideService {
         );
     }
 
-    @Recover
-    public ResponseEntity<String> dataAccessExceptionRecoverForSave(DataAccessException exception,
-                                                                          RideDto rideDto) {
-        return new ResponseEntity<>(CANNOT_SAVE_RIDE_MESSAGE + rideDto.toString(),
-                HttpStatus.INTERNAL_SERVER_ERROR);
+    @Retryable(retryFor = {DataAccessException.class}, maxAttempts = 5,
+            backoff = @Backoff(delay = 500))
+    @Transactional
+    public void deleteRideByPassengerId(long passengerId) {
+        rideRepository.deleteAllByPassengerId(passengerId);
     }
 
-    @Recover
-    public ResponseEntity<String> dataAccessExceptionRecoverForPut(DataAccessException exception,
-                                                                    RidePutDto ridePutDto) {
-        return new ResponseEntity<>(CANNOT_PUT_RIDE_MESSAGE + ridePutDto.toString(),
-                HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @Recover
-    public ResponseEntity<String> dataAccessExceptionRecoverForPatch(DataAccessException exception,
-                                                                     RidePatchDto ridePatchDto) {
-        return new ResponseEntity<>(CANNOT_PATCH_RIDE_MESSAGE + ridePatchDto.toString(),
-                HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @Recover
-    public ResponseEntity<String> dataAccessExceptionRecoverForDelete(DataAccessException exception,
-                                                                      long id) {
-        return new ResponseEntity<>(CANNOT_DELETE_RIDE_MESSAGE + id,
-                HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @Recover
-    public ResponseEntity<String> feignExceptionRecover(FeignException exception) {
-        return new ResponseEntity<>(FEIGN_CANNOT_CONNECT_MESSAGE + exception.contentUTF8(),
-                HttpStatus.INTERNAL_SERVER_ERROR);
+    @Retryable(retryFor = {DataAccessException.class}, maxAttempts = 5,
+            backoff = @Backoff(delay = 500))
+    @Transactional
+    public void deleteRideByDriverId(long driverId) {
+        rideRepository.deleteAllByDriverId(driverId);
     }
 }

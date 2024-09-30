@@ -1,6 +1,7 @@
 package com.software.modsen.ridesmicroservice.controllers;
 
 import com.software.modsen.ridesmicroservice.entities.ride.*;
+import com.software.modsen.ridesmicroservice.mappers.RideMapper;
 import com.software.modsen.ridesmicroservice.services.RideService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -14,13 +15,14 @@ import java.util.List;
 @AllArgsConstructor
 public class RideController {
     private RideService rideService;
+    private final RideMapper RIDE_MAPPER = RideMapper.INSTANCE;
 
     @GetMapping
     public ResponseEntity<List<Ride>> getAllRides() {
         return ResponseEntity.ok(rideService.getAllRides());
     }
 
-    @GetMapping("/not-completed-and-cancelled")
+    @GetMapping("")
     private ResponseEntity<List<Ride>> getAllNotCompletedOrCancelledRides() {
         return ResponseEntity.ok(rideService.getAllNotCompletedAndNotCancelledRides());
     }
@@ -47,20 +49,30 @@ public class RideController {
 
     @PostMapping
     public ResponseEntity<Ride> saveRide(@Valid @RequestBody RideDto rideDto) {
-        System.out.println(rideDto);
-        return ResponseEntity.ok(rideService.saveRide(rideDto));
+        return ResponseEntity.ok(rideService.saveRide(
+                rideDto.getPassengerId(),
+                rideDto.getDriverId(),
+                RIDE_MAPPER.fromRideDtoToRide(rideDto)));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Ride> updateRideById(@PathVariable("id") long id,
                                                @Valid @RequestBody RidePutDto ridePutDto) {
-        return ResponseEntity.ok(rideService.updateRide(id, ridePutDto));
+        return ResponseEntity.ok(rideService.updateRide(
+                id,
+                ridePutDto.getPassengerId(),
+                ridePutDto.getDriverId(),
+                RIDE_MAPPER.fromRidePutDtoToRide(ridePutDto)));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Ride> patchRideById(@PathVariable("id") long id,
                                               @Valid @RequestBody RidePatchDto ridePatchDto) {
-        return ResponseEntity.ok(rideService.patchRide(id, ridePatchDto));
+        return ResponseEntity.ok(rideService.patchRide(
+                id,
+                ridePatchDto.getPassengerId(),
+                ridePatchDto.getDriverId(),
+                RIDE_MAPPER.fromRidePatchDtoToRide(ridePatchDto)));
     }
 
     @PatchMapping("/{id}/status")
@@ -73,5 +85,17 @@ public class RideController {
     public ResponseEntity<String> deleteRideById(@PathVariable("id") long id) {
         rideService.deleteRideById(id);
         return ResponseEntity.ok("Ride with id " + id + " was successfully deleted.");
+    }
+
+    @DeleteMapping("/{passenger_id}")
+    public ResponseEntity<String> deleteRideByPassengerId(@PathVariable("passenger_id") long passengerId) {
+        rideService.deleteRideByPassengerId(passengerId);
+        return ResponseEntity.ok("Rides with passenger id " + passengerId + " was successfully deleted.");
+    }
+
+    @DeleteMapping("/{driver_id}")
+    public ResponseEntity<String> deleteRideByDriverId(@PathVariable("driver_id") long driverId) {
+        rideService.deleteRideByDriverId(driverId);
+        return ResponseEntity.ok("Rides with driver id " + driverId + " was successfully deleted.");
     }
 }

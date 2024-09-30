@@ -21,4 +21,9 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
             @Param("id") long id,
             @Param("completedStatus") RideStatus completedStatus,
             @Param("cancelledStatus") RideStatus cancelledStatus);
+
+    void deleteAllByPassengerId(long passengerId);
+
+    void deleteAllByDriverId(long driverId);
+
 }
