@@ -22,7 +22,7 @@ public class RideController {
         return ResponseEntity.ok(rideService.getAllRides());
     }
 
-    @GetMapping("")
+    @GetMapping("/not-completed-and-cancelled")
     private ResponseEntity<List<Ride>> getAllNotCompletedOrCancelledRides() {
         return ResponseEntity.ok(rideService.getAllNotCompletedAndNotCancelledRides());
     }
@@ -33,7 +33,7 @@ public class RideController {
     }
 
     @GetMapping("/{id}/not-completed-and-cancelled")
-    public ResponseEntity<Ride> getNotCompletedOrCancelledRidesById(@PathVariable("id") long id) {
+    public ResponseEntity<Ride> getNotCompletedOrCancelledRideById(@PathVariable("id") long id) {
         return ResponseEntity.ok(rideService.getNotCompletedAndNotCancelledRideById(id));
     }
 
@@ -87,13 +87,13 @@ public class RideController {
         return ResponseEntity.ok("Ride with id " + id + " was successfully deleted.");
     }
 
-    @DeleteMapping("/{passenger_id}")
+    @DeleteMapping("/passenger/{passenger_id}")
     public ResponseEntity<String> deleteRideByPassengerId(@PathVariable("passenger_id") long passengerId) {
         rideService.deleteRideByPassengerId(passengerId);
         return ResponseEntity.ok("Rides with passenger id " + passengerId + " was successfully deleted.");
     }
 
-    @DeleteMapping("/{driver_id}")
+    @DeleteMapping("/driver/{driver_id}")
     public ResponseEntity<String> deleteRideByDriverId(@PathVariable("driver_id") long driverId) {
         rideService.deleteRideByDriverId(driverId);
         return ResponseEntity.ok("Rides with driver id " + driverId + " was successfully deleted.");
