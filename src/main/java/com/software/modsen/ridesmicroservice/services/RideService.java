@@ -3,10 +3,12 @@ package com.software.modsen.ridesmicroservice.services;
 import static com.software.modsen.ridesmicroservice.exceptions.ExceptionMessage.*;
 import com.software.modsen.ridesmicroservice.clients.DriverClient;
 import com.software.modsen.ridesmicroservice.clients.PassengerClient;
+import com.software.modsen.ridesmicroservice.entities.account.RideAccount;
 import com.software.modsen.ridesmicroservice.entities.driver.Driver;
 import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
 import com.software.modsen.ridesmicroservice.entities.ride.*;
 import com.software.modsen.ridesmicroservice.exceptions.RideNotFondException;
+import com.software.modsen.ridesmicroservice.observer.RideAccountSubject;
 import com.software.modsen.ridesmicroservice.repositories.RideRepository;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
@@ -27,6 +29,7 @@ public class RideService {
     private RideRepository rideRepository;
     private PassengerClient passengerClient;
     private DriverClient driverClient;
+    private RideAccountSubject rideAccountSubject;
 
     public List<Ride> getAllRides() {
         return rideRepository.findAll();
@@ -169,10 +172,23 @@ public class RideService {
     public Ride changeRideStatusById(long id, RideStatus rideStatus) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
 
-        return rideFromDb.map(ride -> {
-            ride.setRideStatus(rideStatus);
-            return rideRepository.save(ride);
-        }).orElseThrow(() -> new RideNotFondException(RIDE_NOT_FOUND_MESSAGE));
+        if (rideFromDb.isPresent()) {
+            Ride updatingRide = rideFromDb.get();
+            updatingRide.setRideStatus(rideStatus);
+
+            Ride savedRide = rideRepository.save(updatingRide);
+
+            if (rideStatus.equals(RideStatus.COMPLETED)) {
+                rideAccountSubject.notifyRideAccountObservers(
+                        savedRide.getPassenger().getId(),
+                        savedRide.getDriver().getId(),
+                        new RideAccount(savedRide.getPrice(), savedRide.getCurrency()));
+            }
+
+            return savedRide;
+        }
+
+        throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
     }
 
     @Retryable(retryFor = {DataAccessException.class}, maxAttempts = 5,

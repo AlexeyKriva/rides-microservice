@@ -22,7 +22,7 @@ public class RideController {
         return ResponseEntity.ok(rideService.getAllRides());
     }
 
-    @GetMapping("/not-completed-and-cancelled")
+    @GetMapping("/not-completed-and-cancelledx")
     private ResponseEntity<List<Ride>> getAllNotCompletedOrCancelledRides() {
         return ResponseEntity.ok(rideService.getAllNotCompletedAndNotCancelledRides());
     }
