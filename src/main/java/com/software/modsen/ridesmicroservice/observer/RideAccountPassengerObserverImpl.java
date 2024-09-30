@@ -9,20 +9,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
-public class RideAccountObserverImpl implements RideAccountObserver {
+public class RideAccountPassengerObserverImpl implements RideAccountObserver {
     private PassengerClient passengerClient;
-    private DriverClient driverClient;
-    private final Float BALANCE_FACTOR = 0.8f;
 
     @Override
     @Transactional
-    public void updatePassengerAndDriverBalances(Long passengerId, Long driverId, RideAccount rideAccount) {
+    public void updateBalance(Long passengerId, RideAccount rideAccount) {
         passengerClient.cancelBalanceByPassengerId(
                 passengerId,
                 new PassengerAccountCancelDto(rideAccount.getBalance(), rideAccount.getCurrency()));
-
-        driverClient.increaseBalanceByDriverId(
-                driverId,
-                new DriverAccountIncreaseDto(rideAccount.getBalance() * BALANCE_FACTOR, rideAccount.getCurrency()));
     }
 }
