@@ -1,6 +1,7 @@
 package com.software.modsen.ridesmicroservice.clients;
 
 import com.software.modsen.ridesmicroservice.entities.account.DriverAccount;
+import com.software.modsen.ridesmicroservice.entities.account.DriverAccountCancelDto;
 import com.software.modsen.ridesmicroservice.entities.account.DriverAccountIncreaseDto;
 import com.software.modsen.ridesmicroservice.entities.driver.Driver;
 import jakarta.validation.Valid;
@@ -17,6 +18,11 @@ public interface DriverClient {
     @GetMapping("/{id}")
     @Transactional
     ResponseEntity<Driver> getDriverById(@PathVariable("id") long id);
+
+    @PutMapping("/{driver_id}/cancel")
+    public ResponseEntity<DriverAccount> cancelBalanceByPassengerId(
+            @PathVariable("driver_id") long driverId,
+            @Valid @RequestBody DriverAccountCancelDto driverAccountCancelDto);
 
     @PutMapping("/account/{driver_id}/increase")
     @Transactional

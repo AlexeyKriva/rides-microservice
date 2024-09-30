@@ -10,6 +10,7 @@ import com.software.modsen.ridesmicroservice.entities.ride.*;
 import com.software.modsen.ridesmicroservice.exceptions.RideNotFondException;
 import com.software.modsen.ridesmicroservice.observer.RideAccountSubject;
 import com.software.modsen.ridesmicroservice.repositories.RideRepository;
+import com.software.modsen.ridesmicroservice.saga.RideSagaCoordinator;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -29,7 +30,7 @@ public class RideService {
     private RideRepository rideRepository;
     private PassengerClient passengerClient;
     private DriverClient driverClient;
-    private RideAccountSubject rideAccountSubject;
+    private RideSagaCoordinator rideSagaCoordinator;
 
     public List<Ride> getAllRides() {
         return rideRepository.findAll();
@@ -174,18 +175,15 @@ public class RideService {
 
         if (rideFromDb.isPresent()) {
             Ride updatingRide = rideFromDb.get();
-            updatingRide.setRideStatus(rideStatus);
-
-            Ride savedRide = rideRepository.save(updatingRide);
 
             if (rideStatus.equals(RideStatus.COMPLETED)) {
-                rideAccountSubject.notifyRideAccountObservers(
-                        savedRide.getPassenger().getId(),
-                        savedRide.getDriver().getId(),
-                        new RideAccount(savedRide.getPrice(), savedRide.getCurrency()));
-            }
+                return rideSagaCoordinator.updateRideStatusAndPassengerAndDriverBalances(updatingRide.getRideStatus(),
+                        updatingRide);
+            } else {
+                updatingRide.setRideStatus(rideStatus);
 
-            return savedRide;
+                return rideRepository.save(updatingRide);
+            }
         }
 
         throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
