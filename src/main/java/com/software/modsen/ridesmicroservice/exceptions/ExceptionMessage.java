@@ -14,9 +14,4 @@ public class ExceptionMessage {
     public static final String DATA_INTEGRITY_VIOLENT_MESSAGE = "Not all data entered.";
     public static final String FEIGN_CANNOT_CONNECT_MESSAGE = "Unsuccessful attempt to connect to the service for" +
             " passengers or drivers. ";
-
-    public static final String CANNOT_SAVE_RIDE_MESSAGE = "Unsuccessful attempt to save passenger ";
-    public static final String CANNOT_PUT_RIDE_MESSAGE = "Unsuccessful attempt to save passenger ";
-    public static final String CANNOT_PATCH_RIDE_MESSAGE = "Unsuccessful attempt to patch passenger ";
-    public static final String CANNOT_DELETE_RIDE_MESSAGE = "Unsuccessful attempt to delete passenger with id ";
 }

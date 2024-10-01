@@ -1,8 +1,6 @@
 package com.software.modsen.ridesmicroservice.observer;
 
-import com.software.modsen.ridesmicroservice.clients.DriverClient;
 import com.software.modsen.ridesmicroservice.clients.PassengerClient;
-import com.software.modsen.ridesmicroservice.entities.account.DriverAccountIncreaseDto;
 import com.software.modsen.ridesmicroservice.entities.account.PassengerAccountCancelDto;
 import com.software.modsen.ridesmicroservice.entities.account.RideAccount;
 import lombok.AllArgsConstructor;

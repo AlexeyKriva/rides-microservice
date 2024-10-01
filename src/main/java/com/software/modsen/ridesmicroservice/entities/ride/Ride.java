@@ -2,6 +2,7 @@ package com.software.modsen.ridesmicroservice.entities.ride;
 
 import com.software.modsen.ridesmicroservice.entities.driver.Driver;
 import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,9 +15,11 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "Ride entity.")
 public class Ride {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private long id;
 
     @OneToOne(fetch = FetchType.EAGER)
@@ -28,9 +31,11 @@ public class Ride {
     private Driver driver;
 
     @Column(name = "from_address", nullable = false)
+    @Schema(example = "Nezavisimosty 7")
     private String fromAddress;
 
     @Column(name = "to_address", nullable = false)
+    @Schema(example = "Nezavisimosty 183")
     private String toAddress;
 
     @Enumerated(EnumType.STRING)
@@ -38,6 +43,7 @@ public class Ride {
     private RideStatus rideStatus;
 
     @Column(name = "order_date_time", nullable = false)
+    @Schema(example = "2024-15-03T12:00:00")
     private LocalDateTime orderDateTime;
 
     @Column(name = "price", nullable = false)

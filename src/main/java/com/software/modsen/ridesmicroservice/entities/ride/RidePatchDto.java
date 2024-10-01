@@ -1,11 +1,10 @@
 package com.software.modsen.ridesmicroservice.entities.ride;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
@@ -21,9 +20,11 @@ public class RidePatchDto {
     private Long driverId;
 
     @JsonProperty("from_address")
+    @Schema(example = "Nezavisimosty 7")
     private String fromAddress;
 
     @JsonProperty("to_address")
+    @Schema(example = "Nezavisimosty 183")
     private String toAddress;
 
     @JsonProperty("ride_status")
@@ -31,6 +32,7 @@ public class RidePatchDto {
 
     @PastOrPresent(message = "Date cannot be in the future.")
     @JsonProperty("order_date_time")
+    @Schema(example = "2024-15-03T12:00:00")
     private LocalDateTime orderDateTime;
 
     @JsonProperty("price")
