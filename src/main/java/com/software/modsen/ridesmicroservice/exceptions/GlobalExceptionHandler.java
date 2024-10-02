@@ -88,4 +88,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleNoSuchElementException(NoSuchElementException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(DatabaseConnectionRefusedException.class)
+    public ResponseEntity<String> pSQLExceptionHandler(DatabaseConnectionRefusedException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
