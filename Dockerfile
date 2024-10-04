@@ -11,7 +11,7 @@ RUN mvn package -DskipTests
 
 FROM openjdk:17-jdk
 
-COPY /target/rides-microservice-0.0.1-SNAPSHOT.jar /rides/launch-rides.jar
+COPY /target/rides-microservice*.jar /rides/launch-rides.jar
 
 ENTRYPOINT ["java","-jar","/rides/launch-rides.jar"]
 

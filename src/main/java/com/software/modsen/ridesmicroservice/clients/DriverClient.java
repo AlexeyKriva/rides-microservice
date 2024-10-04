@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "driver-microservice", url = "http://localhost:8082/api/driver")
+@FeignClient(name = "driver-microservice", url = "${feign.client.driver.url}")
 public interface DriverClient {
     @GetMapping("/{id}")
     @Transactional

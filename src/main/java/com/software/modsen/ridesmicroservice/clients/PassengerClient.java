@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "passenger-microservice", url = "http://localhost:8081/api/passenger")
+@FeignClient(name = "passenger-microservice", url = "${feign.client.passenger.url}")
 public interface PassengerClient {
     @GetMapping("/{id}")
     ResponseEntity<Passenger> getPassengerById(@PathVariable("id") long id);
