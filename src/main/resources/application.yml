@@ -5,6 +5,21 @@ spring:
   application:
     name: rides-microservice
 
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/cab-aggregator-db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:98479847}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.postgresql.Driver}
+
+  cloud:
+    openfeign:
+      client:
+        config:
+          driver-microservice:
+            url: ${DRIVER_SERVER_URL:http://localhost:8082/api/driver}
+          passenger-microservice:
+            url: ${PASSENGER_SERVER_URL:http://localhost:8081/api/passenger}
+
 eureka:
   client:
     service-url:

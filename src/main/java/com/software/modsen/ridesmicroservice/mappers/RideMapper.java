@@ -18,6 +18,8 @@ public interface RideMapper {
 
     Ride fromRidePutDtoToRide(RidePutDto ridePutDto);
 
+    Ride fromRidePatchDtoToRide(RidePatchDto ridePatchDto);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateRideFromRidePatchDto(RidePatchDto ridePatchDto, @MappingTarget Ride ride);
 }

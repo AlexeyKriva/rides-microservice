@@ -1,9 +1,10 @@
 package com.software.modsen.ridesmicroservice.controllers;
 
 import com.software.modsen.ridesmicroservice.entities.ride.*;
+import com.software.modsen.ridesmicroservice.mappers.RideMapper;
 import com.software.modsen.ridesmicroservice.services.RideService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,16 +12,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/ride", produces = "application/json")
+@AllArgsConstructor
 public class RideController {
-    @Autowired
     private RideService rideService;
+    private final RideMapper RIDE_MAPPER = RideMapper.INSTANCE;
 
     @GetMapping
     public ResponseEntity<List<Ride>> getAllRides() {
         return ResponseEntity.ok(rideService.getAllRides());
     }
 
-    @GetMapping("/not-completed-and-cancelled")
+    @GetMapping("/not-completed-and-cancelledx")
     private ResponseEntity<List<Ride>> getAllNotCompletedOrCancelledRides() {
         return ResponseEntity.ok(rideService.getAllNotCompletedAndNotCancelledRides());
     }
@@ -31,7 +33,7 @@ public class RideController {
     }
 
     @GetMapping("/{id}/not-completed-and-cancelled")
-    public ResponseEntity<Ride> getNotCompletedOrCancelledRidesById(@PathVariable("id") long id) {
+    public ResponseEntity<Ride> getNotCompletedOrCancelledRideById(@PathVariable("id") long id) {
         return ResponseEntity.ok(rideService.getNotCompletedAndNotCancelledRideById(id));
     }
 
@@ -47,20 +49,30 @@ public class RideController {
 
     @PostMapping
     public ResponseEntity<Ride> saveRide(@Valid @RequestBody RideDto rideDto) {
-        System.out.println(rideDto);
-        return ResponseEntity.ok(rideService.saveRide(rideDto));
+        return ResponseEntity.ok(rideService.saveRide(
+                rideDto.getPassengerId(),
+                rideDto.getDriverId(),
+                RIDE_MAPPER.fromRideDtoToRide(rideDto)));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Ride> updateRideById(@PathVariable("id") long id,
                                                @Valid @RequestBody RidePutDto ridePutDto) {
-        return ResponseEntity.ok(rideService.updateRide(id, ridePutDto));
+        return ResponseEntity.ok(rideService.updateRide(
+                id,
+                ridePutDto.getPassengerId(),
+                ridePutDto.getDriverId(),
+                RIDE_MAPPER.fromRidePutDtoToRide(ridePutDto)));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Ride> patchRideById(@PathVariable("id") long id,
                                               @Valid @RequestBody RidePatchDto ridePatchDto) {
-        return ResponseEntity.ok(rideService.patchRide(id, ridePatchDto));
+        return ResponseEntity.ok(rideService.patchRide(
+                id,
+                ridePatchDto.getPassengerId(),
+                ridePatchDto.getDriverId(),
+                RIDE_MAPPER.fromRidePatchDtoToRide(ridePatchDto)));
     }
 
     @PatchMapping("/{id}/status")
@@ -73,5 +85,17 @@ public class RideController {
     public ResponseEntity<String> deleteRideById(@PathVariable("id") long id) {
         rideService.deleteRideById(id);
         return ResponseEntity.ok("Ride with id " + id + " was successfully deleted.");
+    }
+
+    @DeleteMapping("/passenger/{passenger_id}")
+    public ResponseEntity<String> deleteRideByPassengerId(@PathVariable("passenger_id") long passengerId) {
+        rideService.deleteRideByPassengerId(passengerId);
+        return ResponseEntity.ok("Rides with passenger id " + passengerId + " was successfully deleted.");
+    }
+
+    @DeleteMapping("/driver/{driver_id}")
+    public ResponseEntity<String> deleteRideByDriverId(@PathVariable("driver_id") long driverId) {
+        rideService.deleteRideByDriverId(driverId);
+        return ResponseEntity.ok("Rides with driver id " + driverId + " was successfully deleted.");
     }
 }

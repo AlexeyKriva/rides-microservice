@@ -1,15 +1,15 @@
 package com.software.modsen.ridesmicroservice.configs;
 
 import liquibase.integration.spring.SpringLiquibase;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
 @Configuration
+@AllArgsConstructor
 public class LiquibaseConfig {
-    @Autowired
     private DataSource dataSource;
 
     @Bean
