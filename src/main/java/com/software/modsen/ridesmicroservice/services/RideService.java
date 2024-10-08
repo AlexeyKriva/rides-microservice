@@ -69,18 +69,6 @@ public class RideService {
         throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
     }
 
-    @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
-    public Ride getNotCompletedAndNotCancelledRideById(long id) {
-        Optional<Ride> rideFromDb = rideRepository.findByIdAndRideStatus(id, RideStatus.COMPLETED,
-                RideStatus.CANCELLED);
-
-        if (rideFromDb.isPresent()) {
-            return rideFromDb.get();
-        }
-
-        throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
-    }
-
     @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
     public Ride saveRide(Long passengerId, Long driverId, Ride newRide) {

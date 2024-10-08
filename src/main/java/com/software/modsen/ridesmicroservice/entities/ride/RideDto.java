@@ -37,7 +37,7 @@ public class RideDto {
     @PastOrPresent(message = "Date cannot be in the future.")
     @NotNull(message = "Order date time cannot be null.")
     @JsonProperty("order_date_time")
-    @Schema(example = "2024-15-03T12:00:00")
+    @Schema(example = "2024-10-03T12:00:00")
     private LocalDateTime orderDateTime;
 
     @NotNull(message = "Price cannot be null.")

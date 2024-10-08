@@ -33,7 +33,7 @@ public class RideController {
     @Operation(
             description = "Allows to get not completed and not cancelled all rides."
     )
-    private ResponseEntity<List<Ride>> getAllNotCompletedOrCancelledRides() {
+    public ResponseEntity<List<Ride>> getAllNotCompletedOrCancelledRides() {
         return ResponseEntity.ok(rideService.getAllNotCompletedAndNotCancelledRides());
     }
 
@@ -44,17 +44,6 @@ public class RideController {
     public ResponseEntity<Ride> getRideById(@PathVariable("id") @Parameter(description = "Ride id.")
                                                 long id) {
         return ResponseEntity.ok(rideService.getRideById(id));
-    }
-
-    @GetMapping("/{id}/not-completed-and-cancelled")
-    @Operation(
-            description = "Allows to get not completed and cancelled ride by id."
-    )
-    public ResponseEntity<Ride> getNotCompletedOrCancelledRideById(
-            @PathVariable("id")
-            @Parameter(description = "Ride id.")
-            long id) {
-        return ResponseEntity.ok(rideService.getNotCompletedAndNotCancelledRideById(id));
     }
 
     @GetMapping("/passenger/{id}")
