@@ -1,0 +1,50 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="version1-9" author="postgres">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="passenger"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="passenger">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="phone_number" type="varchar(20)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="is_deleted" type="boolean" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <insert tableName="passenger">
+            <column name="name" value="Ivan"/>
+            <column name="email" value="ivan@gmail.com"/>
+            <column name="phone_number" value="+375293578799"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="passenger">
+            <column name="name" value="Leonid"/>
+            <column name="email" value="leonid@gmail.com"/>
+            <column name="phone_number" value="+375291145878"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="passenger">
+            <column name="name" value="Andrei"/>
+            <column name="email" value="andrei@gmail.com"/>
+            <column name="phone_number" value="+37529178933"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

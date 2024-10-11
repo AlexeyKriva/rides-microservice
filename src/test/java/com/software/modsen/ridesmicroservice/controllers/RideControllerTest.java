@@ -1,6 +1,5 @@
-package controllers;
+package com.software.modsen.ridesmicroservice.controllers;
 
-import com.software.modsen.ridesmicroservice.controllers.RideController;
 import com.software.modsen.ridesmicroservice.entities.driver.Driver;
 import com.software.modsen.ridesmicroservice.entities.driver.Sex;
 import com.software.modsen.ridesmicroservice.entities.driver.car.Car;

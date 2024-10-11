@@ -4,6 +4,7 @@ import com.software.modsen.ridesmicroservice.entities.driver.car.Car;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Schema(description = "Driver entity.")
 public class Driver {
     @Id

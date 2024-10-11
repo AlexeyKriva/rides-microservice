@@ -1,4 +1,4 @@
-package services;
+package com.software.modsen.ridesmicroservice.services;
 
 import com.software.modsen.ridesmicroservice.clients.DriverClient;
 import com.software.modsen.ridesmicroservice.clients.PassengerClient;
@@ -13,8 +13,6 @@ import com.software.modsen.ridesmicroservice.entities.ride.Ride;
 import com.software.modsen.ridesmicroservice.entities.ride.RideStatus;
 import com.software.modsen.ridesmicroservice.exceptions.RideNotFondException;
 import com.software.modsen.ridesmicroservice.repositories.RideRepository;
-import com.software.modsen.ridesmicroservice.saga.RideSagaCoordinator;
-import com.software.modsen.ridesmicroservice.services.RideService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

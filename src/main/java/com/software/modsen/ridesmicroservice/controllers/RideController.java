@@ -29,7 +29,7 @@ public class RideController {
         return ResponseEntity.ok(rideService.getAllRides());
     }
 
-    @GetMapping("/not-completed-and-cancelledx")
+    @GetMapping("/not-completed-and-cancelled")
     @Operation(
             description = "Allows to get not completed and not cancelled all rides."
     )

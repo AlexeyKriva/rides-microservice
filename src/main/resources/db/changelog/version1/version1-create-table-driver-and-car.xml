@@ -1,0 +1,108 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="version1-10" author="postgres">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="car"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="car">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="color" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="brand" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="car_number" type="varchar(15)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="is_deleted" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <insert tableName="car">
+            <column name="color" value="WHITE"/>
+            <column name="brand" value="FORD"/>
+            <column name="car_number" value="1257AB-1"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="car">
+            <column name="color" value="BLACK"/>
+            <column name="brand" value="BMW"/>
+            <column name="car_number" value="3498CD-7"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="car">
+            <column name="color" value="BLUE"/>
+            <column name="brand" value="FERRARI"/>
+            <column name="car_number" value="3433CD-7"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="version1-11" author="postgres">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="driver"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="driver">
+            <column name="id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(55)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="phone_number" type="varchar(20)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="sex" type="varchar(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="car_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_driver_car" references="car(id)"
+                unique="true" uniqueConstraintName="unique_car_id"/>
+            </column>
+            <column name="is_deleted" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <insert tableName="driver">
+            <column name="name" value="Kirill"/>
+            <column name="email" value="kirill@gmail.com"/>
+            <column name="phone_number" value="+375298877123"/>
+            <column name="sex" value="MALE"/>
+            <column name="car_id" valueNumeric="1"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="driver">
+            <column name="name" value="Vova"/>
+            <column name="email" value="vova@gmail.com"/>
+            <column name="phone_number" value="+375441553333"/>
+            <column name="sex" value="MALE"/>
+            <column name="car_id" valueNumeric="2"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="driver">
+            <column name="name" value="Sergei"/>
+            <column name="email" value="sergei@gmail.com"/>
+            <column name="phone_number" value="+375441333337"/>
+            <column name="sex" value="MALE"/>
+            <column name="car_id" valueNumeric="3"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
