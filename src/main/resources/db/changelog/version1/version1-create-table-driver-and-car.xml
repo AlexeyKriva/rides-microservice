@@ -3,7 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="version1-10" author="postgres">
+    <changeSet id="version1-13" author="postgres">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="car"/>
@@ -48,7 +48,7 @@
         </insert>
     </changeSet>
 
-    <changeSet id="version1-11" author="postgres">
+    <changeSet id="version1-14" author="postgres">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="driver"/>
