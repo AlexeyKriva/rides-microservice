@@ -17,8 +17,8 @@ public interface PassengerClient {
     @GetMapping("/{id}")
     ResponseEntity<Passenger> getPassengerById(@PathVariable("id") long id);
 
-    @PutMapping("/{passenger_id}/increase")
-    public ResponseEntity<PassengerAccount> increaseBalanceByPassengerId(
+    @PutMapping("/account/{passenger_id}/increase")
+    ResponseEntity<PassengerAccount> increaseBalanceByPassengerId(
             @PathVariable("passenger_id") long passengerId,
             @Valid @RequestBody PassengerAccountIncreaseDto passengerAccountIncreaseDto);
 

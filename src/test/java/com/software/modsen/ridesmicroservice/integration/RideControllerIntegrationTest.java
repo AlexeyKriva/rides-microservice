@@ -12,7 +12,6 @@ import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
 import com.software.modsen.ridesmicroservice.entities.ride.Currency;
 import com.software.modsen.ridesmicroservice.entities.ride.Ride;
 import com.software.modsen.ridesmicroservice.entities.ride.RideStatus;
-import com.software.modsen.ridesmicroservice.services.RideService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +34,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import org.springframework.http.MediaType;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 

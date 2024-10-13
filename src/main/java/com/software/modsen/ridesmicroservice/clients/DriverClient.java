@@ -19,8 +19,8 @@ public interface DriverClient {
     @Transactional
     ResponseEntity<Driver> getDriverById(@PathVariable("id") long id);
 
-    @PutMapping("/{driver_id}/cancel")
-    public ResponseEntity<DriverAccount> cancelBalanceByPassengerId(
+    @PutMapping("/account/{driver_id}/cancel")
+    ResponseEntity<DriverAccount> cancelBalanceByPassengerId(
             @PathVariable("driver_id") long driverId,
             @Valid @RequestBody DriverAccountCancelDto driverAccountCancelDto);
 
