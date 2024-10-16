@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static com.software.modsen.ridesmicroservice.exceptions.ExceptionMessage.*;
 
@@ -81,5 +82,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<String> feignExceptionHandler(FeignException exception) {
         return new ResponseEntity<>(FEIGN_CANNOT_CONNECT_MESSAGE + exception.contentUTF8(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Object> handleNoSuchElementException(NoSuchElementException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DatabaseConnectionRefusedException.class)
+    public ResponseEntity<String> pSQLExceptionHandler(DatabaseConnectionRefusedException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
