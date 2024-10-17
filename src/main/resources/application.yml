@@ -31,3 +31,19 @@ logging:
       netflix:
         eureka: off
         discovery: off
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.request]": true
