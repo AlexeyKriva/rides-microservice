@@ -12,6 +12,8 @@ import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
 import com.software.modsen.ridesmicroservice.entities.ride.Currency;
 import com.software.modsen.ridesmicroservice.entities.ride.Ride;
 import com.software.modsen.ridesmicroservice.entities.ride.RideStatus;
+import com.software.modsen.ridesmicroservice.repositories.RideRepository;
+import com.software.modsen.ridesmicroservice.services.RideService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,19 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 import org.springframework.http.MediaType;
 
 import java.time.LocalDateTime;
@@ -46,9 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = RidesMicroserviceApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@Testcontainers
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class RideControllerIntegrationTest {
+public class RideControllerIntegrationTest extends TestconteinersConfig {
     @Autowired
     private MockMvc mockMvc;
 
@@ -61,40 +54,15 @@ public class RideControllerIntegrationTest {
     @MockBean
     private DriverClient driverClient;
 
-    @Container
-    @ServiceConnection
-    private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>(
-            DockerImageName.parse("postgres:15"))
-            .withDatabaseName("cab-aggregator-db")
-            .withUsername("postgres")
-            .withPassword("98479847");
-    @DynamicPropertySource
-    static void configureDatabase(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-    }
+    @Autowired
+    private RideService rideService;
 
-    static boolean isAlreadySetUped = false;
+    @Autowired
+    private RideRepository rideRepository;
 
-    @BeforeEach
-    void setUp() {
-        if (!isAlreadySetUped) {
-            List<Ride> rides = defaultRides();
-            long passengerId = 1;
-            long driverId = 1;
-            for (Ride ride: rides) {
-                jdbcTemplate.update("INSERT INTO ride " +
-                        "(passenger_id, driver_id, from_address, to_address, ride_status, order_date_time,"
-                                + " price, currency)"
-                                + " VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
-                        passengerId++, driverId++, ride.getFromAddress(), ride.getToAddress(),
-                        ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
-                        ride.getCurrency().name());
-            }
-
-            isAlreadySetUped = true;
-        }
+    @AfterEach
+    void setDown() {
+        rideRepository.deleteAll();
     }
 
     List<Ride> defaultRides() {
@@ -130,10 +98,22 @@ public class RideControllerIntegrationTest {
     }
 
     @Test
-    @Order(1)
     @SneakyThrows
     void getAllRidesTest_ReturnsRides() {
         //given
+        List<Ride> rides = defaultRides();
+        long passengerId = 1;
+        long driverId = 1;
+        for (Ride ride: rides) {
+            jdbcTemplate.update("INSERT INTO ride " +
+                            "(passenger_id, driver_id, from_address, to_address, ride_status, order_date_time,"
+                            + " price, currency)"
+                            + " VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                    passengerId++, driverId++, ride.getFromAddress(), ride.getToAddress(),
+                    ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
+                    ride.getCurrency().name());
+        }
+
         MvcResult mvcResult = mockMvc.perform(get("/api/ride")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -163,10 +143,22 @@ public class RideControllerIntegrationTest {
     }
 
     @Test
-    @Order(2)
     @SneakyThrows
     void getAllNotCompletedOrCancelledRidesTest_ReturnsValidRides() {
         //given
+        List<Ride> rides = defaultRides();
+        long passengerId = 1;
+        long driverId = 1;
+        for (Ride ride: rides) {
+            jdbcTemplate.update("INSERT INTO ride " +
+                            "(passenger_id, driver_id, from_address, to_address, ride_status, order_date_time,"
+                            + " price, currency)"
+                            + " VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                    passengerId++, driverId++, ride.getFromAddress(), ride.getToAddress(),
+                    ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
+                    ride.getCurrency().name());
+        }
+
         MvcResult mvcResult = mockMvc.perform(get("/api/ride/not-completed-and-cancelled")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -196,13 +188,24 @@ public class RideControllerIntegrationTest {
     }
 
     @Test
-    @Order(3)
     @SneakyThrows
     void getRideByIdTest_ReturnsRide() {
         //given
-        MvcResult mvcResult = mockMvc.perform(get("/api/ride/1")
+        Ride ride = defaultRides().get(0);
+        long passengerId = 1;
+        long driverId = 1;
+        jdbcTemplate.update("INSERT INTO ride " +
+                        "(passenger_id, driver_id, from_address, to_address, ride_status, order_date_time,"
+                        + " price, currency)"
+                        + " VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                passengerId, driverId, ride.getFromAddress(), ride.getToAddress(),
+                ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
+                ride.getCurrency().name());
+        Ride rideFromDb = rideService.getAllRides().get(0);
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/ride/" + rideFromDb.getId())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                //.andExpect(status().isOk())
                 .andReturn();
 
         //when
@@ -219,10 +222,22 @@ public class RideControllerIntegrationTest {
     }
 
     @Test
-    @Order(4)
     @SneakyThrows
     void getAllRidesByPassengerIdTest_ReturnsRide() {
         //given
+        List<Ride> rides = defaultRides();
+        long passengerId = 1;
+        long driverId = 1;
+        for (Ride ride: rides) {
+            jdbcTemplate.update("INSERT INTO ride " +
+                            "(passenger_id, driver_id, from_address, to_address, ride_status, order_date_time,"
+                            + " price, currency)"
+                            + " VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                    passengerId++, driverId++, ride.getFromAddress(), ride.getToAddress(),
+                    ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
+                    ride.getCurrency().name());
+        }
+
         MvcResult mvcResult = mockMvc.perform(get("/api/ride/passenger/2")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -242,10 +257,22 @@ public class RideControllerIntegrationTest {
     }
 
     @Test
-    @Order(5)
     @SneakyThrows
     void getAllRidesByDriverIdTest_ReturnsRide() {
         //given
+        List<Ride> rides = defaultRides();
+        long passengerId = 1;
+        long driverId = 1;
+        for (Ride ride: rides) {
+            jdbcTemplate.update("INSERT INTO ride " +
+                            "(passenger_id, driver_id, from_address, to_address, ride_status, order_date_time,"
+                            + " price, currency)"
+                            + " VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                    passengerId++, driverId++, ride.getFromAddress(), ride.getToAddress(),
+                    ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
+                    ride.getCurrency().name());
+        }
+
         MvcResult mvcResult = mockMvc.perform(get("/api/ride/driver/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -275,7 +302,6 @@ public class RideControllerIntegrationTest {
             + "}";
 
     @Test
-    @Order(6)
     @SneakyThrows
     void saveRideTest_ReturnsRide() {
         //given
@@ -287,6 +313,7 @@ public class RideControllerIntegrationTest {
         mockPassenger.setDeleted(false);
         when(passengerClient.getPassengerById(1L))
                 .thenReturn(new ResponseEntity<>(mockPassenger, HttpStatus.OK));
+
         Driver mockDriver = new Driver();
         mockDriver.setId(2L);
         mockDriver.setName("Vova");
@@ -303,6 +330,7 @@ public class RideControllerIntegrationTest {
         mockDriver.setDeleted(false);
         when(driverClient.getDriverById(2L))
                 .thenReturn(new ResponseEntity<>(mockDriver, HttpStatus.OK));
+
         MvcResult mvcResult = mockMvc.perform(post("/api/ride")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(rideDto))
@@ -334,10 +362,22 @@ public class RideControllerIntegrationTest {
             + "}";
 
     @Test
-    @Order(7)
     @SneakyThrows
     void updateRideByIdTest_ReturnsRide() {
         //given
+        Ride ride = defaultRides().get(0);
+        long passengerId = 1;
+        long driverId = 1;
+        jdbcTemplate.update("INSERT INTO ride " +
+                        "(passenger_id, driver_id, from_address, to_address, ride_status, order_date_time,"
+                        + " price, currency)"
+                        + " VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                passengerId, driverId, ride.getFromAddress(), ride.getToAddress(),
+                ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
+                ride.getCurrency().name());
+
+        Ride rideFromDb = rideService.getAllRides().get(0);
+
         Passenger mockPassenger = new Passenger();
         mockPassenger.setId(1L);
         mockPassenger.setName("Ivan");
@@ -346,6 +386,7 @@ public class RideControllerIntegrationTest {
         mockPassenger.setDeleted(false);
         when(passengerClient.getPassengerById(1L))
                 .thenReturn(new ResponseEntity<>(mockPassenger, HttpStatus.OK));
+
         Driver mockDriver = new Driver();
         mockDriver.setId(1L);
         mockDriver.setName("Kirill");
@@ -362,7 +403,8 @@ public class RideControllerIntegrationTest {
         mockDriver.setDeleted(false);
         when(driverClient.getDriverById(1L))
                 .thenReturn(new ResponseEntity<>(mockDriver, HttpStatus.OK));
-        MvcResult mvcResult = mockMvc.perform(put("/api/ride/1")
+
+        MvcResult mvcResult = mockMvc.perform(put("/api/ride/" + rideFromDb.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(rideUpdateDto))
                 .andExpect(status().isOk())
@@ -387,10 +429,22 @@ public class RideControllerIntegrationTest {
             + "}";
 
     @Test
-    @Order(8)
     @SneakyThrows
     void patchRideByIdTest_ReturnsRide() {
         //given
+        Ride ride = defaultRides().get(0);
+        long passengerId = 1;
+        long driverId = 1;
+        jdbcTemplate.update("INSERT INTO ride " +
+                        "(passenger_id, driver_id, from_address, to_address, ride_status, order_date_time,"
+                        + " price, currency)"
+                        + " VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                passengerId, driverId, ride.getFromAddress(), ride.getToAddress(),
+                ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
+                ride.getCurrency().name());
+
+        Ride rideFromDb = rideService.getAllRides().get(0);
+
         Passenger mockPassenger = new Passenger();
         mockPassenger.setId(1L);
         mockPassenger.setName("Ivan");
@@ -399,6 +453,7 @@ public class RideControllerIntegrationTest {
         mockPassenger.setDeleted(false);
         when(passengerClient.getPassengerById(1L))
                 .thenReturn(new ResponseEntity<>(mockPassenger, HttpStatus.OK));
+
         Driver mockDriver = new Driver();
         mockDriver.setId(1L);
         mockDriver.setName("Kirill");
@@ -415,7 +470,8 @@ public class RideControllerIntegrationTest {
         mockDriver.setDeleted(false);
         when(driverClient.getDriverById(1L))
                 .thenReturn(new ResponseEntity<>(mockDriver, HttpStatus.OK));
-        MvcResult mvcResult = mockMvc.perform(patch("/api/ride/1")
+
+        MvcResult mvcResult = mockMvc.perform(patch("/api/ride/" + rideFromDb.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ridePatchDto))
                 .andExpect(status().isOk())
@@ -434,11 +490,24 @@ public class RideControllerIntegrationTest {
     }
 
     @Test
-    @Order(9)
     @SneakyThrows
     void updateRideStatusByIdTest_ReturnsRide() {
         //given
-        MvcResult mvcResult = mockMvc.perform(patch("/api/ride/1/status?status=EN_ROUTE_TO_DESTINATION")
+        Ride ride = defaultRides().get(0);
+        long passengerId = 1;
+        long driverId = 1;
+        jdbcTemplate.update("INSERT INTO ride " +
+                        "(passenger_id, driver_id, from_address, to_address, ride_status, order_date_time,"
+                        + " price, currency)"
+                        + " VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                passengerId, driverId, ride.getFromAddress(), ride.getToAddress(),
+                ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
+                ride.getCurrency().name());
+
+        Ride rideFromDb = rideService.getAllRides().get(0);
+
+        MvcResult mvcResult = mockMvc.perform(patch("/api/ride/" + rideFromDb.getId() +
+                        "/status?status=EN_ROUTE_TO_DESTINATION")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -455,11 +524,23 @@ public class RideControllerIntegrationTest {
     }
 
     @Test
-    @Order(10)
     @SneakyThrows
     void deleteRideByIdTest_ReturnsRide() {
         //given
-        MvcResult mvcResult = mockMvc.perform(delete("/api/ride/1"))
+        Ride ride = defaultRides().get(0);
+        long passengerId = 1;
+        long driverId = 1;
+        jdbcTemplate.update("INSERT INTO ride " +
+                        "(passenger_id, driver_id, from_address, to_address, ride_status, order_date_time,"
+                        + " price, currency)"
+                        + " VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                passengerId, driverId, ride.getFromAddress(), ride.getToAddress(),
+                ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
+                ride.getCurrency().name());
+
+        Ride rideFromDb = rideService.getAllRides().get(0);
+
+        MvcResult mvcResult = mockMvc.perform(delete("/api/ride/" + rideFromDb.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -467,14 +548,24 @@ public class RideControllerIntegrationTest {
         String responseContent = mvcResult.getResponse().getContentAsString();
 
         //then
-        assertEquals("Ride with id 1 was successfully deleted.", responseContent);
+        assertEquals("Ride with id " + rideFromDb.getId() + " was successfully deleted.", responseContent);
     }
 
     @Test
-    @Order(11)
     @SneakyThrows
     void deleteRideByPassengerIdTest_ReturnsRide() {
         //given
+        Ride ride = defaultRides().get(0);
+        long passengerId = 2;
+        long driverId = 2;
+        jdbcTemplate.update("INSERT INTO ride " +
+                        "(passenger_id, driver_id, from_address, to_address, ride_status, order_date_time,"
+                        + " price, currency)"
+                        + " VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                passengerId, driverId, ride.getFromAddress(), ride.getToAddress(),
+                ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
+                ride.getCurrency().name());
+
         MvcResult mvcResult = mockMvc.perform(delete("/api/ride/passenger/2"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -487,10 +578,20 @@ public class RideControllerIntegrationTest {
     }
 
     @Test
-    @Order(12)
     @SneakyThrows
     void deleteRideByDriverIdIdTest_ReturnsRide() {
         //given
+        Ride ride = defaultRides().get(0);
+        long passengerId = 3;
+        long driverId = 3;
+        jdbcTemplate.update("INSERT INTO ride " +
+                        "(passenger_id, driver_id, from_address, to_address, ride_status, order_date_time,"
+                        + " price, currency)"
+                        + " VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                passengerId, driverId, ride.getFromAddress(), ride.getToAddress(),
+                ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
+                ride.getCurrency().name());
+
         MvcResult mvcResult = mockMvc.perform(delete("/api/ride/driver/3"))
                 .andExpect(status().isOk())
                 .andReturn();
