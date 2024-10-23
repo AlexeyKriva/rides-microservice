@@ -292,11 +292,11 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
     }
 
     String rideDto = "{"
-            + "\"passenger_id\": 1,"
-            + "\"driver_id\": 2,"
-            + "\"from_address\": \"Nezavisimosty 7\","
-            + "\"to_address\": \"Nezavisimosty 183\","
-            + "\"order_date_time\": \"2022-10-15T12:00:00\","
+            + "\"passengerId\": 1,"
+            + "\"driverId\": 2,"
+            + "\"fromAddress\": \"Nezavisimosty 7\","
+            + "\"toAddress\": \"Nezavisimosty 183\","
+            + "\"orderDateTime\": \"2022-10-15T12:00:00\","
             + "\"price\": 25,"
             + "\"currency\": \"BYN\""
             + "}";
@@ -351,12 +351,12 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
     }
 
     String rideUpdateDto = "{"
-            + "\"passenger_id\": 1,"
-            + "\"driver_id\": 1,"
-            + "\"from_address\": \"Nezavisimosty 7\","
-            + "\"to_address\": \"Nezavisimosty 183\","
-            + "\"ride_status\": \"EN_ROUTE_TO_PASSENGER\","
-            + "\"order_date_time\": \"2021-11-18T12:00:00\","
+            + "\"passengerId\": 1,"
+            + "\"driverId\": 1,"
+            + "\"fromAddress\": \"Nezavisimosty 7\","
+            + "\"toAddress\": \"Nezavisimosty 183\","
+            + "\"rideStatus\": \"EN_ROUTE_TO_PASSENGER\","
+            + "\"orderDateTime\": \"2021-11-18T12:00:00\","
             + "\"price\": 30.5,"
             + "\"currency\": \"BYN\""
             + "}";
@@ -424,8 +424,8 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
     }
 
     String ridePatchDto = "{"
-            + "\"from_address\": \"Mirnay 17\","
-            + "\"to_address\": \"Armeyskay 3\""
+            + "\"fromAddress\": \"Mirnay 17\","
+            + "\"toAddress\": \"Armeyskay 3\""
             + "}";
 
     @Test

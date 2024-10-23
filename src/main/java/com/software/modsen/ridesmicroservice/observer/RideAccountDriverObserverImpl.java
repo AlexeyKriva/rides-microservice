@@ -1,7 +1,7 @@
 package com.software.modsen.ridesmicroservice.observer;
 
 import com.software.modsen.ridesmicroservice.clients.DriverClient;
-import com.software.modsen.ridesmicroservice.entities.account.DriverAccountIncreaseDto;
+import com.software.modsen.ridesmicroservice.entities.account.DriverAccountBalanceUpDto;
 import com.software.modsen.ridesmicroservice.entities.account.RideAccount;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +16,7 @@ public class RideAccountDriverObserverImpl implements RideAccountObserver {
     public void updateBalance(Long driverId, RideAccount rideAccount) {
         driverClient.increaseBalanceByDriverId(
                 driverId,
-                new DriverAccountIncreaseDto(
+                new DriverAccountBalanceUpDto(
                         rideAccount.getBalance() * BALANCE_FACTOR, rideAccount.getCurrency()));
     }
 }

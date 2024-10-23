@@ -78,8 +78,8 @@ public class RideController {
             @Parameter(description = "Ride entity.")
             RideDto rideDto) {
         return ResponseEntity.ok(rideService.saveRide(
-                rideDto.getPassengerId(),
-                rideDto.getDriverId(),
+                rideDto.passengerId(),
+                rideDto.driverId(),
                 RIDE_MAPPER.fromRideDtoToRide(rideDto)));
     }
 
@@ -97,8 +97,8 @@ public class RideController {
             RidePutDto ridePutDto) {
         return ResponseEntity.ok(rideService.updateRide(
                 id,
-                ridePutDto.getPassengerId(),
-                ridePutDto.getDriverId(),
+                ridePutDto.passengerId(),
+                ridePutDto.driverId(),
                 RIDE_MAPPER.fromRidePutDtoToRide(ridePutDto)));
     }
 
@@ -116,8 +116,8 @@ public class RideController {
             RidePatchDto ridePatchDto) {
         return ResponseEntity.ok(rideService.patchRide(
                 id,
-                ridePatchDto.getPassengerId(),
-                ridePatchDto.getDriverId(),
+                ridePatchDto.passengerId(),
+                ridePatchDto.driverId(),
                 RIDE_MAPPER.fromRidePatchDtoToRide(ridePatchDto)));
     }
 

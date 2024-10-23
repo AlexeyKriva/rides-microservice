@@ -170,7 +170,7 @@ public class RideControllerTest {
         savedRide.setId(1);
         savedRide.setPassenger(passengerWithIdAndIsDeleted(1L, false));
         savedRide.setDriver(driverWithIdAndIsDeleted(1L, false));
-        doReturn(savedRide).when(rideService).saveRide(rideDto.getPassengerId(), rideDto.getDriverId(),
+        doReturn(savedRide).when(rideService).saveRide(rideDto.passengerId(), rideDto.driverId(),
                 rideMapper.fromRideDtoToRide(rideDto));
 
         //when
@@ -196,7 +196,7 @@ public class RideControllerTest {
         updatingRide.setPassenger(passengerWithIdAndIsDeleted(1L, false));
         updatingRide.setDriver(driverWithIdAndIsDeleted(1L, false));
         doReturn(updatingRide).when(rideService).updateRide(rideId,
-                ridePutDto.getPassengerId(), ridePutDto.getDriverId(),
+                ridePutDto.passengerId(), ridePutDto.driverId(),
                 rideMapper.fromRidePutDtoToRide(ridePutDto));
 
         //when
@@ -207,7 +207,7 @@ public class RideControllerTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(updatingRide, responseEntity.getBody());
         verify(rideService).updateRide(rideId,
-                ridePutDto.getPassengerId(), ridePutDto.getDriverId(),
+                ridePutDto.passengerId(), ridePutDto.driverId(),
                 rideMapper.fromRidePutDtoToRide(ridePutDto));
     }
 
@@ -224,7 +224,7 @@ public class RideControllerTest {
         updatingRide.setPassenger(passengerWithIdAndIsDeleted(1L, false));
         updatingRide.setDriver(driverWithIdAndIsDeleted(1L, false));
         doReturn(updatingRide).when(rideService).patchRide(rideId,
-                ridePatchDto.getPassengerId(), ridePatchDto.getDriverId(),
+                ridePatchDto.passengerId(), ridePatchDto.driverId(),
                 rideMapper.fromRidePatchDtoToRide(ridePatchDto));
 
         //when
@@ -235,7 +235,7 @@ public class RideControllerTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(updatingRide, responseEntity.getBody());
         verify(rideService).patchRide(rideId,
-                ridePatchDto.getPassengerId(), ridePatchDto.getDriverId(),
+                ridePatchDto.passengerId(), ridePatchDto.driverId(),
                 rideMapper.fromRidePatchDtoToRide(ridePatchDto));
     }
 

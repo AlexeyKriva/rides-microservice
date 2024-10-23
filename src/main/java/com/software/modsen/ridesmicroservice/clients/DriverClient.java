@@ -1,8 +1,8 @@
 package com.software.modsen.ridesmicroservice.clients;
 
 import com.software.modsen.ridesmicroservice.entities.account.DriverAccount;
-import com.software.modsen.ridesmicroservice.entities.account.DriverAccountCancelDto;
-import com.software.modsen.ridesmicroservice.entities.account.DriverAccountIncreaseDto;
+import com.software.modsen.ridesmicroservice.entities.account.DriverAccountBalanceDownDto;
+import com.software.modsen.ridesmicroservice.entities.account.DriverAccountBalanceUpDto;
 import com.software.modsen.ridesmicroservice.entities.driver.Driver;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -22,11 +22,11 @@ public interface DriverClient {
     @PutMapping("/account/{driver_id}/cancel")
     ResponseEntity<DriverAccount> cancelBalanceByPassengerId(
             @PathVariable("driver_id") long driverId,
-            @Valid @RequestBody DriverAccountCancelDto driverAccountCancelDto);
+            @Valid @RequestBody DriverAccountBalanceDownDto driverAccountBalanceDownDto);
 
     @PutMapping("/account/{driver_id}/increase")
     @Transactional
     ResponseEntity<DriverAccount> increaseBalanceByDriverId(
             @PathVariable("driver_id") long driverId,
-            @Valid @RequestBody DriverAccountIncreaseDto driverAccountIncreaseDto);
+            @Valid @RequestBody DriverAccountBalanceUpDto driverAccountBalanceUpDto);
 }
