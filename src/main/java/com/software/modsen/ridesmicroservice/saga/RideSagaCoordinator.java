@@ -49,13 +49,13 @@ public class RideSagaCoordinator {
 
         passengerClient.increaseBalanceByPassengerId(
                 rollbackRide.getPassenger().getId(),
-                new PassengerAccountIncreaseDto(
+                new PassengerAccountBalanceUpDto(
                         rollbackRide.getPrice(),
                         rollbackRide.getCurrency()));
 
         driverClient.cancelBalanceByPassengerId(
                 rollbackRide.getDriver().getId(),
-                new DriverAccountCancelDto(
+                new DriverAccountBalanceDownDto(
                         rollbackRide.getPrice() * BALANCE_FACTOR,
                         rollbackRide.getCurrency()));
     }

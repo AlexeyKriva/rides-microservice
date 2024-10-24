@@ -35,17 +35,16 @@ public class RideService {
     private RideSagaCoordinator rideSagaCoordinator;
 
     @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
-    public List<Ride> getAllRides() {
-        return rideRepository.findAll();
-    }
-
-    @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
-    public List<Ride> getAllNotCompletedAndNotCancelledRides() {
-        return rideRepository.findAll().stream()
-                .filter(ride -> ride.getRideStatus() != RideStatus.COMPLETED
-                        && ride.getRideStatus() != RideStatus.CANCELLED
-                )
-                .collect(Collectors.toList());
+    public List<Ride> getAllRides(boolean includeCancelledAndCompleted) {
+        if (includeCancelledAndCompleted) {
+            return rideRepository.findAll();
+        } else {
+            return rideRepository.findAll().stream()
+                    .filter(ride -> ride.getRideStatus() != RideStatus.COMPLETED
+                            && ride.getRideStatus() != RideStatus.CANCELLED
+                    )
+                    .collect(Collectors.toList());
+        }
     }
 
     @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))

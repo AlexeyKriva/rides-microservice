@@ -16,9 +16,9 @@ spring:
       client:
         config:
           driver-microservice:
-            url: ${DRIVER_SERVER_URL:http://localhost:8082/api/driver}
+            url: ${DRIVER_SERVER_URL:http://localhost:8082/api/drivers}
           passenger-microservice:
-            url: ${PASSENGER_SERVER_URL:http://localhost:8081/api/passenger}
+            url: ${PASSENGER_SERVER_URL:http://localhost:8081/api/passengers}
 
 eureka:
   client:

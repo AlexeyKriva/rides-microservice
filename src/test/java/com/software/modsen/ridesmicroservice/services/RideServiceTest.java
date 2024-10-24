@@ -84,7 +84,7 @@ public class RideServiceTest {
         doReturn(rides).when(rideRepository).findAll();
 
         //when
-        List<Ride> ridesFromDb = rideService.getAllRides();
+        List<Ride> ridesFromDb = rideService.getAllRides(true);
 
         //then
         assertNotNull(ridesFromDb);
@@ -98,7 +98,7 @@ public class RideServiceTest {
         doReturn(rides).when(rideRepository).findAll();
 
         //when
-        List<Ride> ridesFromDb = rideService.getAllRides();
+        List<Ride> ridesFromDb = rideService.getAllRides(false);
 
         //then
         assertNotNull(ridesFromDb);
