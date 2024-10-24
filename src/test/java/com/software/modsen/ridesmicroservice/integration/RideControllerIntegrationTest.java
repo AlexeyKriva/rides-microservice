@@ -114,7 +114,7 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
                     ride.getCurrency().name());
         }
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/ride")
+        MvcResult mvcResult = mockMvc.perform(get("/api/rides?includeCancelledAndCompleted=true")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -159,7 +159,7 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
                     ride.getCurrency().name());
         }
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/ride/not-completed-and-cancelled")
+        MvcResult mvcResult = mockMvc.perform(get("/api/rides?includeCancelledAndCompleted=false")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -201,11 +201,11 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
                 passengerId, driverId, ride.getFromAddress(), ride.getToAddress(),
                 ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
                 ride.getCurrency().name());
-        Ride rideFromDb = rideService.getAllRides().get(0);
+        Ride rideFromDb = rideService.getAllRides(true).get(0);
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/ride/" + rideFromDb.getId())
+        MvcResult mvcResult = mockMvc.perform(get("/api/rides/" + rideFromDb.getId())
                         .contentType(MediaType.APPLICATION_JSON))
-                //.andExpect(status().isOk())
+                .andExpect(status().isOk())
                 .andReturn();
 
         //when
@@ -238,7 +238,7 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
                     ride.getCurrency().name());
         }
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/ride/passenger/2")
+        MvcResult mvcResult = mockMvc.perform(get("/api/rides/passengers/2")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -273,7 +273,7 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
                     ride.getCurrency().name());
         }
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/ride/driver/1")
+        MvcResult mvcResult = mockMvc.perform(get("/api/rides/drivers/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -331,7 +331,7 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
         when(driverClient.getDriverById(2L))
                 .thenReturn(new ResponseEntity<>(mockDriver, HttpStatus.OK));
 
-        MvcResult mvcResult = mockMvc.perform(post("/api/ride")
+        MvcResult mvcResult = mockMvc.perform(post("/api/rides")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(rideDto))
                 .andExpect(status().isOk())
@@ -376,7 +376,7 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
                 ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
                 ride.getCurrency().name());
 
-        Ride rideFromDb = rideService.getAllRides().get(0);
+        Ride rideFromDb = rideService.getAllRides(true).get(0);
 
         Passenger mockPassenger = new Passenger();
         mockPassenger.setId(1L);
@@ -404,7 +404,7 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
         when(driverClient.getDriverById(1L))
                 .thenReturn(new ResponseEntity<>(mockDriver, HttpStatus.OK));
 
-        MvcResult mvcResult = mockMvc.perform(put("/api/ride/" + rideFromDb.getId())
+        MvcResult mvcResult = mockMvc.perform(put("/api/rides/" + rideFromDb.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(rideUpdateDto))
                 .andExpect(status().isOk())
@@ -443,7 +443,7 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
                 ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
                 ride.getCurrency().name());
 
-        Ride rideFromDb = rideService.getAllRides().get(0);
+        Ride rideFromDb = rideService.getAllRides(true).get(0);
 
         Passenger mockPassenger = new Passenger();
         mockPassenger.setId(1L);
@@ -471,7 +471,7 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
         when(driverClient.getDriverById(1L))
                 .thenReturn(new ResponseEntity<>(mockDriver, HttpStatus.OK));
 
-        MvcResult mvcResult = mockMvc.perform(patch("/api/ride/" + rideFromDb.getId())
+        MvcResult mvcResult = mockMvc.perform(patch("/api/rides/" + rideFromDb.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ridePatchDto))
                 .andExpect(status().isOk())
@@ -504,10 +504,10 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
                 ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
                 ride.getCurrency().name());
 
-        Ride rideFromDb = rideService.getAllRides().get(0);
+        Ride rideFromDb = rideService.getAllRides(true).get(0);
 
-        MvcResult mvcResult = mockMvc.perform(patch("/api/ride/" + rideFromDb.getId() +
-                        "/status?status=EN_ROUTE_TO_DESTINATION")
+        MvcResult mvcResult = mockMvc.perform(patch("/api/rides/" + rideFromDb.getId() +
+                        "/status?rideStatus=EN_ROUTE_TO_DESTINATION")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -538,9 +538,9 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
                 ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
                 ride.getCurrency().name());
 
-        Ride rideFromDb = rideService.getAllRides().get(0);
+        Ride rideFromDb = rideService.getAllRides(true).get(0);
 
-        MvcResult mvcResult = mockMvc.perform(delete("/api/ride/" + rideFromDb.getId()))
+        MvcResult mvcResult = mockMvc.perform(delete("/api/rides/" + rideFromDb.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -566,7 +566,7 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
                 ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
                 ride.getCurrency().name());
 
-        MvcResult mvcResult = mockMvc.perform(delete("/api/ride/passenger/2"))
+        MvcResult mvcResult = mockMvc.perform(delete("/api/rides/passengers/2"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -592,7 +592,7 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
                 ride.getRideStatus().name(), ride.getOrderDateTime(), ride.getPrice(),
                 ride.getCurrency().name());
 
-        MvcResult mvcResult = mockMvc.perform(delete("/api/ride/driver/3"))
+        MvcResult mvcResult = mockMvc.perform(delete("/api/rides/drivers/3"))
                 .andExpect(status().isOk())
                 .andReturn();
 

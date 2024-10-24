@@ -17,12 +17,12 @@ public interface PassengerClient {
     @GetMapping("/{id}")
     ResponseEntity<Passenger> getPassengerById(@PathVariable("id") long id);
 
-    @PutMapping("/account/{passenger_id}/increase")
+    @PutMapping("/{passenger_id}/accounts/up")
     ResponseEntity<PassengerAccount> increaseBalanceByPassengerId(
             @PathVariable("passenger_id") long passengerId,
             @Valid @RequestBody PassengerAccountBalanceUpDto passengerAccountBalanceUpDto);
 
-    @PutMapping("/account/{passenger_id}/cancel")
+    @PutMapping("/{passenger_id}/accounts/down")
     ResponseEntity<PassengerAccount> cancelBalanceByPassengerId(
             @PathVariable("passenger_id") long passengerId,
             @Valid @RequestBody PassengerAccountBalanceDownDto passengerAccountBalanceDownDto);

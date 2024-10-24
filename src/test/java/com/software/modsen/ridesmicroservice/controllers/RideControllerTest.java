@@ -78,32 +78,32 @@ public class RideControllerTest {
     void getAllRidesTest_ReturnsRides() {
         //given
         List<Ride> rides = defaultRides(List.of(1L, 2L), List.of(1L, 2L));
-        doReturn(rides).when(rideService).getAllRides();
+        doReturn(rides).when(rideService).getAllRides(true);
 
         //when
-        ResponseEntity<List<Ride>> responseEntity = rideController.getAllRides();
+        ResponseEntity<List<Ride>> responseEntity = rideController.getAllRides(true);
 
         //then
         assertNotNull(responseEntity.getBody());
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(rides, responseEntity.getBody());
-        verify(rideService).getAllRides();
+        verify(rideService).getAllRides(true);
     }
 
     @Test
     void getAllNotCompletedOrCancelledRidesTest_ReturnsValidRides() {
         //given
         List<Ride> rides = defaultRides(List.of(1L, 2L), List.of(1L, 2L));
-        doReturn(rides).when(rideService).getAllNotCompletedAndNotCancelledRides();
+        doReturn(rides).when(rideService).getAllRides(false);
 
         //when
-        ResponseEntity<List<Ride>> responseEntity = rideController.getAllNotCompletedOrCancelledRides();
+        ResponseEntity<List<Ride>> responseEntity = rideController.getAllRides(false);
 
         //then
         assertNotNull(responseEntity.getBody());
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(rides, responseEntity.getBody());
-        verify(rideService).getAllNotCompletedAndNotCancelledRides();
+        verify(rideService).getAllRides(false);
     }
 
     @Test
