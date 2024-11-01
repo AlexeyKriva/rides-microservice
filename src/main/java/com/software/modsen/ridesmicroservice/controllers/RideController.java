@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/ride", produces = "application/json")
+@RequestMapping(value = "/api/rides", produces = "application/json")
 @AllArgsConstructor
 @Tag(name = "Ride controller", description = "Allows to interact with passengers.")
 public class RideController {
@@ -25,16 +25,12 @@ public class RideController {
     @Operation(
             description = "Allows to get all rides."
     )
-    public ResponseEntity<List<Ride>> getAllRides() {
-        return ResponseEntity.ok(rideService.getAllRides());
-    }
-
-    @GetMapping("/not-completed-and-cancelled")
-    @Operation(
-            description = "Allows to get not completed and not cancelled all rides."
-    )
-    public ResponseEntity<List<Ride>> getAllNotCompletedOrCancelledRides() {
-        return ResponseEntity.ok(rideService.getAllNotCompletedAndNotCancelledRides());
+    public ResponseEntity<List<Ride>> getAllRides(
+            @RequestParam(name = "includeCancelledAndCompleted",
+                    required = false, defaultValue = "true")
+            boolean includeCancelledAndCompleted
+    ) {
+        return ResponseEntity.ok(rideService.getAllRides(includeCancelledAndCompleted));
     }
 
     @GetMapping("/{id}")
@@ -46,7 +42,7 @@ public class RideController {
         return ResponseEntity.ok(rideService.getRideById(id));
     }
 
-    @GetMapping("/passenger/{id}")
+    @GetMapping("/passengers/{id}")
     @Operation(
             description = "Allows to get all rides by passenger id."
     )
@@ -57,7 +53,7 @@ public class RideController {
         return ResponseEntity.ok(rideService.getAllRidesByPassengerId(passengerId));
     }
 
-    @GetMapping("/driver/{id}")
+    @GetMapping("/drivers/{id}")
     @Operation(
             description = "Allows to get all rides by driver id."
     )
@@ -78,8 +74,8 @@ public class RideController {
             @Parameter(description = "Ride entity.")
             RideDto rideDto) {
         return ResponseEntity.ok(rideService.saveRide(
-                rideDto.getPassengerId(),
-                rideDto.getDriverId(),
+                rideDto.passengerId(),
+                rideDto.driverId(),
                 RIDE_MAPPER.fromRideDtoToRide(rideDto)));
     }
 
@@ -91,14 +87,15 @@ public class RideController {
             @PathVariable("id")
             @Parameter(description = "Ride id.")
             long id,
+
             @Valid
             @RequestBody
             @Parameter(description = "Ride entity.")
             RidePutDto ridePutDto) {
         return ResponseEntity.ok(rideService.updateRide(
                 id,
-                ridePutDto.getPassengerId(),
-                ridePutDto.getDriverId(),
+                ridePutDto.passengerId(),
+                ridePutDto.driverId(),
                 RIDE_MAPPER.fromRidePutDtoToRide(ridePutDto)));
     }
 
@@ -116,8 +113,8 @@ public class RideController {
             RidePatchDto ridePatchDto) {
         return ResponseEntity.ok(rideService.patchRide(
                 id,
-                ridePatchDto.getPassengerId(),
-                ridePatchDto.getDriverId(),
+                ridePatchDto.passengerId(),
+                ridePatchDto.driverId(),
                 RIDE_MAPPER.fromRidePatchDtoToRide(ridePatchDto)));
     }
 
@@ -129,7 +126,7 @@ public class RideController {
             @PathVariable("id")
             @Parameter(description = "Ride id.")
             long id,
-            @RequestParam(value = "status")
+            @RequestParam(value = "rideStatus")
             @Parameter(description = "RIde status.")
             RideStatus rideStatus) {
         return ResponseEntity.ok(rideService.changeRideStatusById(id, rideStatus));
@@ -147,7 +144,7 @@ public class RideController {
         return ResponseEntity.ok("Ride with id " + id + " was successfully deleted.");
     }
 
-    @DeleteMapping("/passenger/{passenger_id}")
+    @DeleteMapping("/passengers/{passenger_id}")
     @Operation(
             description = "Allows to delete ride by passenger id."
     )
@@ -159,7 +156,7 @@ public class RideController {
         return ResponseEntity.ok("Rides with passenger id " + passengerId + " was successfully deleted.");
     }
 
-    @DeleteMapping("/driver/{driver_id}")
+    @DeleteMapping("/drivers/{driver_id}")
     @Operation(
             description = "Allows to delete ride by driver id."
     )

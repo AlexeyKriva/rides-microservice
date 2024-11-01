@@ -1,8 +1,8 @@
 package com.software.modsen.ridesmicroservice.clients;
 
 import com.software.modsen.ridesmicroservice.entities.account.PassengerAccount;
-import com.software.modsen.ridesmicroservice.entities.account.PassengerAccountCancelDto;
-import com.software.modsen.ridesmicroservice.entities.account.PassengerAccountIncreaseDto;
+import com.software.modsen.ridesmicroservice.entities.account.PassengerAccountBalanceDownDto;
+import com.software.modsen.ridesmicroservice.entities.account.PassengerAccountBalanceUpDto;
 import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -17,13 +17,13 @@ public interface PassengerClient {
     @GetMapping("/{id}")
     ResponseEntity<Passenger> getPassengerById(@PathVariable("id") long id);
 
-    @PutMapping("/account/{passenger_id}/increase")
+    @PutMapping("/{passenger_id}/accounts/up")
     ResponseEntity<PassengerAccount> increaseBalanceByPassengerId(
             @PathVariable("passenger_id") long passengerId,
-            @Valid @RequestBody PassengerAccountIncreaseDto passengerAccountIncreaseDto);
+            @Valid @RequestBody PassengerAccountBalanceUpDto passengerAccountBalanceUpDto);
 
-    @PutMapping("/account/{passenger_id}/cancel")
+    @PutMapping("/{passenger_id}/accounts/down")
     ResponseEntity<PassengerAccount> cancelBalanceByPassengerId(
             @PathVariable("passenger_id") long passengerId,
-            @Valid @RequestBody PassengerAccountCancelDto passengerAccountCancelDto);
+            @Valid @RequestBody PassengerAccountBalanceDownDto passengerAccountBalanceDownDto);
 }

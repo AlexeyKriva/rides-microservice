@@ -6,7 +6,7 @@ Contract.make {
     description "Should return ride response entity"
     request {
         method 'GET'
-        url '/api/ride/1'
+        url '/api/rides/1'
         headers {
             header('Content-Type', 'application/vnd.fraud.v1+json')
         }
