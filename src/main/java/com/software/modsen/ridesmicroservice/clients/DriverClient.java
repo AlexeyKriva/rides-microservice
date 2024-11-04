@@ -1,5 +1,6 @@
 package com.software.modsen.ridesmicroservice.clients;
 
+import com.software.modsen.ridesmicroservice.configs.FeignConfig;
 import com.software.modsen.ridesmicroservice.entities.account.DriverAccount;
 import com.software.modsen.ridesmicroservice.entities.account.DriverAccountBalanceDownDto;
 import com.software.modsen.ridesmicroservice.entities.account.DriverAccountBalanceUpDto;
@@ -8,16 +9,14 @@ import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "driver-microservice")
+@FeignClient(name = "driver-microservice", configuration = FeignConfig.class)
 public interface DriverClient {
     @GetMapping("/{id}")
-    @Transactional
-    ResponseEntity<Driver> getDriverById(@PathVariable("id") long id);
+    ResponseEntity<Driver> getDriverById(
+            @PathVariable("id") long id
+    );
 
     @PutMapping("/{driver_id}/accounts/down")
     ResponseEntity<DriverAccount> cancelBalanceByPassengerId(
@@ -25,7 +24,6 @@ public interface DriverClient {
             @Valid @RequestBody DriverAccountBalanceDownDto driverAccountBalanceDownDto);
 
     @PutMapping("/{driver_id}/accounts/up")
-    @Transactional
     ResponseEntity<DriverAccount> increaseBalanceByDriverId(
             @PathVariable("driver_id") long driverId,
             @Valid @RequestBody DriverAccountBalanceUpDto driverAccountBalanceUpDto);

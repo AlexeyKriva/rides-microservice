@@ -1,5 +1,6 @@
 package com.software.modsen.ridesmicroservice.clients;
 
+import com.software.modsen.ridesmicroservice.configs.FeignConfig;
 import com.software.modsen.ridesmicroservice.entities.account.PassengerAccount;
 import com.software.modsen.ridesmicroservice.entities.account.PassengerAccountBalanceDownDto;
 import com.software.modsen.ridesmicroservice.entities.account.PassengerAccountBalanceUpDto;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "passenger-microservice")
+@FeignClient(name = "passenger-microservice", configuration = FeignConfig.class)
 public interface PassengerClient {
     @GetMapping("/{id}")
     ResponseEntity<Passenger> getPassengerById(@PathVariable("id") long id);
