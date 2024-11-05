@@ -13,6 +13,7 @@ import com.software.modsen.ridesmicroservice.saga.RideSagaCoordinator;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.postgresql.util.PSQLException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +29,15 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class RideService {
     private RideRepository rideRepository;
     private PassengerClient passengerClient;
     private DriverClient driverClient;
     private RideSagaCoordinator rideSagaCoordinator;
 
-    @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     public List<Ride> getAllRides(boolean includeCancelledAndCompleted) {
+        log.info("Test log for ELK");
         if (includeCancelledAndCompleted) {
             return rideRepository.findAll();
         } else {
@@ -47,17 +49,14 @@ public class RideService {
         }
     }
 
-    @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     public List<Ride> getAllRidesByPassengerId(long passengerId) {
         return rideRepository.findAllByPassengerId(passengerId);
     }
 
-    @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     public List<Ride> getAllRidesByDriverId(long driverId) {
         return rideRepository.findAllByDriverId(driverId);
     }
 
-    @Retryable(retryFor = {PSQLException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     public Ride getRideById(long id) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
 
@@ -85,7 +84,6 @@ public class RideService {
         return new Ride();
     }
 
-    @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
     public Ride updateRide(long id, Long passengerId, Long driverId, Ride updatingRide) {
         ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(passengerId);
@@ -104,7 +102,6 @@ public class RideService {
         throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
     }
 
-    @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
     public Ride patchRide(long id, Long passengerId, Long driverId, Ride updatingRide) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
@@ -159,7 +156,6 @@ public class RideService {
         throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
     }
 
-    @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
     public Ride changeRideStatusById(long id, RideStatus rideStatus) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
@@ -180,7 +176,6 @@ public class RideService {
         throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
     }
 
-    @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
     public void deleteRideById(long id) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
@@ -191,13 +186,11 @@ public class RideService {
         );
     }
 
-    @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
     public void deleteRideByPassengerId(long passengerId) {
         rideRepository.deleteAllByPassengerId(passengerId);
     }
 
-    @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
     public void deleteRideByDriverId(long driverId) {
         rideRepository.deleteAllByDriverId(driverId);
@@ -212,10 +205,5 @@ public class RideService {
         }
 
         throw new DatabaseConnectionRefusedException(BAD_CONNECTION_TO_DATABASE_MESSAGE + CANNOT_UPDATE_DATA_MESSAGE);
-    }
-
-    @Recover
-    public List<Ride> recoverToPSQLException(Throwable throwable) {
-        throw new DatabaseConnectionRefusedException(BAD_CONNECTION_TO_DATABASE_MESSAGE + CANNOT_GET_DATA_MESSAGE);
     }
 }
