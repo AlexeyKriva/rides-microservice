@@ -20,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 @Slf4j
+@EnableScheduling
 public class RideService {
     private RideRepository rideRepository;
     private PassengerClient passengerClient;
@@ -205,5 +208,11 @@ public class RideService {
         }
 
         throw new DatabaseConnectionRefusedException(BAD_CONNECTION_TO_DATABASE_MESSAGE + CANNOT_UPDATE_DATA_MESSAGE);
+    }
+
+    @Scheduled(fixedRate = 3000)
+    public void testLogsForELK() {
+        log.info("User make query to server.");
+        log.warn("Something happened...");
     }
 }
