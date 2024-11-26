@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Schema(description = "Ride entity.")
 public record RidePatchDto(
         @JsonProperty("passengerId")
-        Long passengerId,
+        String passengerId,
 
         @JsonProperty("driverId")
         Long driverId,

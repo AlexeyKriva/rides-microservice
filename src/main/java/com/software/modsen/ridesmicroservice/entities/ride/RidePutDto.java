@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public record RidePutDto(
         @NotNull(message = "Passenger id cannot be null.")
         @JsonProperty("passengerId")
-        Long passengerId,
+        String passengerId,
 
         @NotNull(message = "Driver id cannot be null.")
         @JsonProperty("driverId")

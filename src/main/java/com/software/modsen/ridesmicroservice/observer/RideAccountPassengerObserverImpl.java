@@ -11,10 +11,14 @@ public class RideAccountPassengerObserverImpl implements RideAccountObserver {
     private PassengerClient passengerClient;
 
     @Override
-    @Transactional
-    public void updateBalance(Long passengerId, RideAccount rideAccount) {
+    public void updateBalance(String passengerId, RideAccount rideAccount) {
         passengerClient.cancelBalanceByPassengerId(
                 passengerId,
                 new PassengerAccountBalanceDownDto(rideAccount.getBalance(), rideAccount.getCurrency()));
+    }
+
+    @Override
+    public void updateBalance(Long userId, RideAccount rideAccount) {
+
     }
 }

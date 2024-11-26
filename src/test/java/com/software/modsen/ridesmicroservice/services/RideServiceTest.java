@@ -43,7 +43,7 @@ public class RideServiceTest {
     @InjectMocks
     RideService rideService;
 
-    Passenger passengerWithIdAndIsDeleted(long id, boolean isDeleted) {
+    Passenger passengerWithIdAndIsDeleted(String id, boolean isDeleted) {
         return new Passenger(id, "name" + id, "name" + id + "@gmail.com",
                 "+375299312345", isDeleted);
     }
@@ -55,8 +55,8 @@ public class RideServiceTest {
     }
 
     Ride defaultRide() {
-        return new Ride(1, passengerWithIdAndIsDeleted(1L, false),
-                driverWithIdAndIsDeleted(1L, false),
+        return new Ride(1, "1",
+                1L,
                 "Nezavisimosty 1", "Nezavisimosty 2", RideStatus.CREATED,
                 LocalDateTime.of(2024, 10, 1, 12, 0, 0, 0),
                 100f, Currency.BYN);
@@ -64,13 +64,13 @@ public class RideServiceTest {
 
     List<Ride> defaultRides(List<Long> passengerIdes, List<Long> driverIdes) {
         return List.of(
-                new Ride(1, passengerWithIdAndIsDeleted(passengerIdes.get(0), false),
-                        driverWithIdAndIsDeleted(driverIdes.get(0), false),
+                new Ride(1, "1",
+                        1L,
                         "Nezavisimosty 1", "Nezavisimosty 2", RideStatus.CREATED,
                         LocalDateTime.of(2024, 10, 1, 12, 0, 0, 0),
                         100f, Currency.BYN),
-                new Ride(2, passengerWithIdAndIsDeleted(passengerIdes.get(1), false),
-                        driverWithIdAndIsDeleted(driverIdes.get(1), false),
+                new Ride(2, "2",
+                        2L,
                         "Nezavisimosty 3", "Nezavisimosty 4", RideStatus.CREATED,
                         LocalDateTime.of(2024, 10, 2, 12, 0, 0, 0),
                         100f, Currency.BYN)
@@ -111,7 +111,7 @@ public class RideServiceTest {
     @Test
     void getAllRidesByPassengerIdTest_ReturnsValidRides() {
         //given
-        long passengerId = 1L;
+        String passengerId = "1";
         List<Ride> rides = defaultRides(List.of(1L, 1L), List.of(1L, 2L));
         doReturn(rides).when(rideRepository).findAllByPassengerId(passengerId);
 
@@ -122,7 +122,7 @@ public class RideServiceTest {
         assertNotNull(ridesFromDb);
         assertEquals(rides, ridesFromDb);
         assertTrue(ridesFromDb.stream().allMatch(ride ->
-                ride.getPassenger().getId() == passengerId));
+                ride.getPassengerId().equals(passengerId)));
     }
 
     @Test
@@ -139,7 +139,7 @@ public class RideServiceTest {
         assertNotNull(ridesFromDb);
         assertEquals(rides, ridesFromDb);
         assertTrue(ridesFromDb.stream().allMatch(ride ->
-                ride.getDriver().getId() == driverId));
+                ride.getDriverId() == driverId));
     }
 
     @Test
@@ -175,7 +175,7 @@ public class RideServiceTest {
     @Test
     void saveRideTest_ReturnsRide() {
         //given
-        long passengerId = 1L;
+        String passengerId = "1";
         long driverId = 1L;
         Ride newRide = new Ride(1L, null, null,
                 "Nezavisimosty 1", "Nezavisimosty 2", null,
@@ -188,8 +188,8 @@ public class RideServiceTest {
         doReturn(passengerEntity).when(passengerClient).getPassengerById(passengerId);
         doReturn(driverEntity).when(driverClient).getDriverById(driverId);
         Ride savedride = newRide;
-        savedride.setPassenger(passengerEntity.getBody());
-        savedride.setDriver(driverEntity.getBody());
+        savedride.setPassengerId(passengerEntity.getBody().getId());
+        savedride.setDriverId(driverEntity.getBody().getId());
         savedride.setRideStatus(RideStatus.CREATED);
         doReturn(savedride).when(rideRepository).save(savedride);
 
@@ -206,7 +206,7 @@ public class RideServiceTest {
     void updateRideTest_WithoutException_ReturnsRide() {
         //given
         long rideId = 1L;
-        long passengerId = 1L;
+        String passengerId = "1";
         long driverId = 1L;
         ResponseEntity<Passenger> passengerEntity = new ResponseEntity<>(
                 passengerWithIdAndIsDeleted(passengerId, false), HttpStatus.OK);
@@ -220,11 +220,9 @@ public class RideServiceTest {
                 100f, Currency.BYN);
         Optional<Ride> ride = Optional.of(defaultRide());
         doReturn(ride).when(rideRepository).findById(rideId);
-        Ride savedRide = new Ride(rideId, passengerEntity.getBody(), driverEntity.getBody(), updatingPassenger
-                .getFromAddress(),
-                updatingPassenger.getToAddress(), updatingPassenger.getRideStatus(), updatingPassenger
-                .getOrderDateTime(), updatingPassenger.getPrice(),
-                updatingPassenger.getCurrency());
+        Ride savedRide = new Ride(rideId, passengerEntity.getBody().getId(), driverEntity.getBody().getId(),
+                updatingPassenger.getFromAddress(), updatingPassenger.getToAddress(), updatingPassenger.getRideStatus(),
+                updatingPassenger.getOrderDateTime(), updatingPassenger.getPrice(), updatingPassenger.getCurrency());
         doReturn(savedRide).when(rideRepository).save(savedRide);
 
         //when
@@ -240,7 +238,7 @@ public class RideServiceTest {
     void updateRideTest_WithRideNotFoundException_ReturnsException() {
         //given
         long rideId = 1L;
-        long passengerId = 1L;
+        String passengerId = "1";
         long driverId = 1L;
         Ride updatingRide = new Ride(rideId, null, null,
                 "Nezavisimosty 3", "Nezavisimosty 7", RideStatus.EN_ROUTE_TO_DESTINATION,
@@ -261,7 +259,7 @@ public class RideServiceTest {
     void patchRide_WithoutException_ReturnsRide() {
         //given
         long rideId = 1L;
-        long passengerId = 1L;
+        String passengerId = "1";
         long driverId = 1L;
         ResponseEntity<Passenger> passengerEntity = new ResponseEntity<>(
                 passengerWithIdAndIsDeleted(passengerId, false), HttpStatus.OK);
@@ -277,8 +275,8 @@ public class RideServiceTest {
         doReturn(ride).when(rideRepository).findById(rideId);
         Ride savedRide = patchRide;
         savedRide.setId(rideId);
-        savedRide.setPassenger(passengerEntity.getBody());
-        savedRide.setDriver(driverEntity.getBody());
+        savedRide.setPassengerId(passengerEntity.getBody().getId());
+        savedRide.setDriverId(driverEntity.getBody().getId());
         savedRide.setOrderDateTime(ride.get().getOrderDateTime());
         doReturn(savedRide).when(rideRepository).save(savedRide);
 
@@ -295,7 +293,7 @@ public class RideServiceTest {
     void patchRideTest_WithRideNotFoundException_ReturnsException() {
         //given
         long rideId = 1L;
-        long passengerId = 1L;
+        String passengerId = "1";
         long driverId = 1L;
         Ride updatingRide = new Ride(rideId, null, null,
                 "Nezavisimosty 3", "Nezavisimosty 7", RideStatus.EN_ROUTE_TO_DESTINATION,
@@ -378,7 +376,7 @@ public class RideServiceTest {
     @Test
     void deleteRideByPassengerIdTest_ReturnsVoid() {
         //given
-        long passengerId = 1;
+        String passengerId = "1";
         doNothing().when(rideRepository).deleteAllByPassengerId(passengerId);
 
         //when
