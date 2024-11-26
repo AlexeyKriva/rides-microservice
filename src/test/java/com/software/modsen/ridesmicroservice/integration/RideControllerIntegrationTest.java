@@ -306,12 +306,12 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
     void saveRideTest_ReturnsRide() {
         //given
         Passenger mockPassenger = new Passenger();
-        mockPassenger.setId(1L);
+        mockPassenger.setId("1");
         mockPassenger.setName("Ivan");
         mockPassenger.setEmail("ivan@gmail.com");
         mockPassenger.setPhoneNumber("+375293578799");
         mockPassenger.setDeleted(false);
-        when(passengerClient.getPassengerById(1L))
+        when(passengerClient.getPassengerById("1"))
                 .thenReturn(new ResponseEntity<>(mockPassenger, HttpStatus.OK));
 
         Driver mockDriver = new Driver();
@@ -379,12 +379,12 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
         Ride rideFromDb = rideService.getAllRides(true).get(0);
 
         Passenger mockPassenger = new Passenger();
-        mockPassenger.setId(1L);
+        mockPassenger.setId("1");
         mockPassenger.setName("Ivan");
         mockPassenger.setEmail("ivan@gmail.com");
         mockPassenger.setPhoneNumber("+375293578799");
         mockPassenger.setDeleted(false);
-        when(passengerClient.getPassengerById(1L))
+        when(passengerClient.getPassengerById("1"))
                 .thenReturn(new ResponseEntity<>(mockPassenger, HttpStatus.OK));
 
         Driver mockDriver = new Driver();
@@ -446,12 +446,12 @@ public class RideControllerIntegrationTest extends TestconteinersConfig {
         Ride rideFromDb = rideService.getAllRides(true).get(0);
 
         Passenger mockPassenger = new Passenger();
-        mockPassenger.setId(1L);
+        mockPassenger.setId("1");
         mockPassenger.setName("Ivan");
         mockPassenger.setEmail("ivan@gmail.com");
         mockPassenger.setPhoneNumber("+375293578799");
         mockPassenger.setDeleted(false);
-        when(passengerClient.getPassengerById(1L))
+        when(passengerClient.getPassengerById("1"))
                 .thenReturn(new ResponseEntity<>(mockPassenger, HttpStatus.OK));
 
         Driver mockDriver = new Driver();

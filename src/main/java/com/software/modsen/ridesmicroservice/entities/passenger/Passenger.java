@@ -18,7 +18,7 @@ public class Passenger {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
-    private long id;
+    private String id;
 
     @Column(name = "name", nullable = false)
     private String name;

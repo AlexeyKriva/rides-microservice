@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface RideRepository extends JpaRepository<Ride, Long> {
-    List<Ride> findAllByPassengerId(long passengerId);
+    List<Ride> findAllByPassengerId(String passengerId);
 
     List<Ride> findAllByDriverId(long passengerId);
 
@@ -22,7 +22,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
             @Param("completedStatus") RideStatus completedStatus,
             @Param("cancelledStatus") RideStatus cancelledStatus);
 
-    void deleteAllByPassengerId(long passengerId);
+    void deleteAllByPassengerId(String passengerId);
 
     void deleteAllByDriverId(long driverId);
 

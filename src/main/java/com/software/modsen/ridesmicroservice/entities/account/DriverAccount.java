@@ -1,6 +1,5 @@
 package com.software.modsen.ridesmicroservice.entities.account;
 
-import com.software.modsen.ridesmicroservice.entities.driver.Driver;
 import com.software.modsen.ridesmicroservice.entities.ride.Currency;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -20,9 +19,7 @@ public class DriverAccount {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private long id;
 
-    @OneToOne
-    @JoinColumn(name = "driver_id", nullable = false)
-    private Driver driver;
+    private Long driverId;
 
     @Column(name = "balance", nullable = false)
     private Float balance;

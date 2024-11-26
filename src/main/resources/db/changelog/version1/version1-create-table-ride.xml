@@ -14,11 +14,11 @@
             <column name="id" type="serial">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="passenger_id" type="bigint">
-                <constraints nullable="false" foreignKeyName="fk_ride_passenger" references="passenger(id)"/>
+            <column name="passenger_id" type="varchar(255)">
+                <constraints nullable="false"/>
             </column>
             <column name="driver_id" type="bigint">
-                <constraints nullable="false" foreignKeyName="fk_ride_driver" references="driver(id)"/>
+                <constraints nullable="false"/>
             </column>
             <column name="from_address" type="varchar(255)">
                 <constraints nullable="false"/>

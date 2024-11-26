@@ -52,7 +52,7 @@ public class RideService {
         }
     }
 
-    public List<Ride> getAllRidesByPassengerId(long passengerId) {
+    public List<Ride> getAllRidesByPassengerId(String passengerId) {
         return rideRepository.findAllByPassengerId(passengerId);
     }
 
@@ -72,13 +72,13 @@ public class RideService {
 
     @CircuitBreaker(name = "simpleCircuitBreaker", fallbackMethod = "fallbackPostgresHandle")
     @Transactional
-    public Ride saveRide(Long passengerId, Long driverId, Ride newRide) {
+    public Ride saveRide(String passengerId, Long driverId, Ride newRide) {
         ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(passengerId);
         ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(driverId);
 
         if (passengerFromDb.getBody() != null && driverFromDb.getBody() != null) {
-            newRide.setPassenger(passengerFromDb.getBody());
-            newRide.setDriver(driverFromDb.getBody());
+            newRide.setPassengerId(passengerFromDb.getBody().getId());
+            newRide.setDriverId(driverFromDb.getBody().getId());
             newRide.setRideStatus(RideStatus.CREATED);
 
             return rideRepository.save(newRide);
@@ -88,7 +88,7 @@ public class RideService {
     }
 
     @Transactional
-    public Ride updateRide(long id, Long passengerId, Long driverId, Ride updatingRide) {
+    public Ride updateRide(long id, String passengerId, Long driverId, Ride updatingRide) {
         ResponseEntity<Passenger> passengerFromDb = passengerClient.getPassengerById(passengerId);
         ResponseEntity<Driver> driverFromDb = driverClient.getDriverById(driverId);
 
@@ -96,8 +96,8 @@ public class RideService {
 
         if (rideFromDb.isPresent()) {
             updatingRide.setId(id);
-            updatingRide.setPassenger(passengerFromDb.getBody());
-            updatingRide.setDriver(driverFromDb.getBody());
+            updatingRide.setPassengerId(passengerFromDb.getBody().getId());
+            updatingRide.setDriverId(driverFromDb.getBody().getId());
 
             return rideRepository.save(updatingRide);
         }
@@ -106,7 +106,7 @@ public class RideService {
     }
 
     @Transactional
-    public Ride patchRide(long id, Long passengerId, Long driverId, Ride updatingRide) {
+    public Ride patchRide(long id, String passengerId, Long driverId, Ride updatingRide) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
 
         if (rideFromDb.isPresent()) {
@@ -116,23 +116,23 @@ public class RideService {
 
             if (passengerId == null) {
                 passengerFromDb = passengerClient.getPassengerById(
-                        rideFromDb.get().getPassenger().getId());
+                        rideFromDb.get().getPassengerId());
             } else {
                 passengerFromDb = passengerClient.getPassengerById(passengerId);
             }
 
-            updatingRide.setPassenger(passengerFromDb.getBody());
+            updatingRide.setPassengerId(passengerFromDb.getBody().getId());
 
             ResponseEntity<Driver> driverFromDb;
 
             if (driverId == null) {
                 driverFromDb = driverClient.getDriverById(
-                        rideFromDb.get().getDriver().getId());
+                        rideFromDb.get().getDriverId());
             } else {
                 driverFromDb = driverClient.getDriverById(driverId);
             }
 
-            updatingRide.setDriver(driverFromDb.getBody());
+            updatingRide.setDriverId(driverFromDb.getBody().getId());
 
             if (updatingRide.getFromAddress() == null) {
                 updatingRide.setFromAddress(rideFromDb.get().getFromAddress());
@@ -159,7 +159,6 @@ public class RideService {
         throw new RideNotFondException(RIDE_NOT_FOUND_MESSAGE);
     }
 
-    @Transactional
     public Ride changeRideStatusById(long id, RideStatus rideStatus) {
         Optional<Ride> rideFromDb = rideRepository.findById(id);
 
@@ -190,7 +189,7 @@ public class RideService {
     }
 
     @Transactional
-    public void deleteRideByPassengerId(long passengerId) {
+    public void deleteRideByPassengerId(String passengerId) {
         rideRepository.deleteAllByPassengerId(passengerId);
     }
 
@@ -210,7 +209,7 @@ public class RideService {
         throw new DatabaseConnectionRefusedException(BAD_CONNECTION_TO_DATABASE_MESSAGE + CANNOT_UPDATE_DATA_MESSAGE);
     }
 
-    @Scheduled(fixedRate = 3000)
+    //@Scheduled(fixedRate = 3000)
     public void testLogsForELK() {
         log.info("User make query to server.");
         log.warn("Something happened...");

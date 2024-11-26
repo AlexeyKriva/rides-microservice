@@ -1,6 +1,5 @@
 package com.software.modsen.ridesmicroservice.entities.account;
 
-import com.software.modsen.ridesmicroservice.entities.passenger.Passenger;
 import com.software.modsen.ridesmicroservice.entities.ride.Currency;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -20,9 +19,7 @@ public class PassengerAccount {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private long id;
 
-    @OneToOne
-    @JoinColumn(name = "passenger_id", nullable = false)
-    private Passenger passenger;
+    private String passengerId;
 
     @Column(name = "balance", nullable = false)
     private Float balance;

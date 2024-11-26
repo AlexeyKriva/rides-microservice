@@ -11,7 +11,7 @@
         </preConditions>
 
         <createTable tableName="passenger">
-            <column name="id" type="serial">
+            <column name="id" type="varchar(255)">
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="varchar(55)">
@@ -29,18 +29,21 @@
         </createTable>
 
         <insert tableName="passenger">
+            <column name="id" value="ie12-euy3-33ak"/>
             <column name="name" value="Ivan"/>
             <column name="email" value="ivan@gmail.com"/>
             <column name="phone_number" value="+375293578799"/>
             <column name="is_deleted" valueBoolean="false"/>
         </insert>
         <insert tableName="passenger">
+            <column name="id" value="ie12-euy3-34ak"/>
             <column name="name" value="Leonid"/>
             <column name="email" value="leonid@gmail.com"/>
             <column name="phone_number" value="+375291145878"/>
             <column name="is_deleted" valueBoolean="false"/>
         </insert>
         <insert tableName="passenger">
+            <column name="id" value="ie12-euy3-35ak"/>
             <column name="name" value="Andrei"/>
             <column name="email" value="andrei@gmail.com"/>
             <column name="phone_number" value="+37529178933"/>

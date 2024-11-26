@@ -18,7 +18,7 @@ public class RideAccountSubject {
     }
 
     @Transactional
-    public void notifyRideAccountObservers(Long passengerId, Long driverId, RideAccount rideAccount) {
+    public void notifyRideAccountObservers(String passengerId, Long driverId, RideAccount rideAccount) {
         rideAccountObservers.get(0).updateBalance(passengerId, rideAccount);
         rideAccountObservers.get(1).updateBalance(driverId, rideAccount);
     }

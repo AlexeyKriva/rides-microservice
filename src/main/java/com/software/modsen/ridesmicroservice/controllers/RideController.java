@@ -49,7 +49,7 @@ public class RideController {
     public ResponseEntity<List<Ride>> getAllRidesByPassengerId(
             @PathVariable("id")
             @Parameter(description = "Passenger id.")
-            long passengerId) {
+            String passengerId) {
         return ResponseEntity.ok(rideService.getAllRidesByPassengerId(passengerId));
     }
 
@@ -151,7 +151,7 @@ public class RideController {
     public ResponseEntity<String> deleteRideByPassengerId(
             @PathVariable("passenger_id")
             @Parameter(description = "Passenger id.")
-            long passengerId) {
+            String passengerId) {
         rideService.deleteRideByPassengerId(passengerId);
         return ResponseEntity.ok("Rides with passenger id " + passengerId + " was successfully deleted.");
     }

@@ -24,7 +24,7 @@ public class RideSagaCoordinator {
 
     private final Float BALANCE_FACTOR = 0.8f;
 
-    @Retryable(retryFor = {DataAccessException.class, FeignException.class}, maxAttempts = 5,
+    @Retryable(maxAttempts = 5,
             backoff = @Backoff(delay = 500))
     public Ride updateRideStatusAndPassengerAndDriverBalances(RideStatus lastRideStatus, Ride updatingRide) {
         try {
@@ -32,8 +32,8 @@ public class RideSagaCoordinator {
             updatingRide.setRideStatus(RideStatus.COMPLETED);
 
             rideAccountSubject.notifyRideAccountObservers(
-                    savedRide.getPassenger().getId(),
-                    savedRide.getDriver().getId(),
+                    savedRide.getPassengerId(),
+                    savedRide.getDriverId(),
                     new RideAccount(savedRide.getPrice(), savedRide.getCurrency()));
         } catch (Exception exception) {
             updatingRide.setRideStatus(lastRideStatus);
@@ -48,13 +48,13 @@ public class RideSagaCoordinator {
         rideRepository.save(rollbackRide);
 
         passengerClient.increaseBalanceByPassengerId(
-                rollbackRide.getPassenger().getId(),
+                rollbackRide.getPassengerId(),
                 new PassengerAccountBalanceUpDto(
                         rollbackRide.getPrice(),
                         rollbackRide.getCurrency()));
 
         driverClient.cancelBalanceByPassengerId(
-                rollbackRide.getDriver().getId(),
+                rollbackRide.getDriverId(),
                 new DriverAccountBalanceDownDto(
                         rollbackRide.getPrice() * BALANCE_FACTOR,
                         rollbackRide.getCurrency()));

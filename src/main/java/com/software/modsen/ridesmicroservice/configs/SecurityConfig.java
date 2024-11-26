@@ -30,14 +30,15 @@ public class SecurityConfig {
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
                         jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/rides").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/rides/passengers/{id}")
-                            .hasAnyRole("PASSENGER", "ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/rides/drivers/{id}")
-                            .hasAnyRole("DRIVER", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/rides/{id}/status")
-                            .hasAnyRole("DRIVER", "ADMIN")
-                        .anyRequest().hasAnyRole("PASSENGER", "DRIVER", "ADMIN")
+//                        .requestMatchers(HttpMethod.GET, "/api/rides").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.GET, "/api/rides/passengers/{id}")
+//                            .hasAnyRole("PASSENGER", "ADMIN")
+//                        .requestMatchers(HttpMethod.GET, "/api/rides/drivers/{id}")
+//                            .hasAnyRole("DRIVER", "ADMIN")
+//                        .requestMatchers(HttpMethod.PUT, "/api/rides/{id}/status")
+//                            .hasAnyRole("DRIVER", "ADMIN")
+//                        .anyRequest().hasAnyRole("PASSENGER", "DRIVER", "ADMIN")
+                                .anyRequest().permitAll()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(authEntryPoint)

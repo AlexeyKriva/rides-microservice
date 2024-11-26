@@ -41,14 +41,14 @@ public class RideControllerTest {
     }
 
     Ride defaultRide() {
-        return new Ride(1, passengerWithIdAndIsDeleted(1L, false),
-                driverWithIdAndIsDeleted(1L, false),
+        return new Ride(1, "1",
+                1L,
                 "Nezavisimosty 1", "Nezavisimosty 2", RideStatus.CREATED,
                 LocalDateTime.of(2024, 10, 1, 12, 0, 0, 0),
                 100f, Currency.BYN);
     }
 
-    Passenger passengerWithIdAndIsDeleted(long id, boolean isDeleted) {
+    Passenger passengerWithIdAndIsDeleted(String id, boolean isDeleted) {
         return new Passenger(id, "name" + id, "name" + id + "@gmail.com",
                 "+375299312345", isDeleted);
     }
@@ -61,13 +61,13 @@ public class RideControllerTest {
 
     List<Ride> defaultRides(List<Long> passengerIdes, List<Long> driverIdes) {
         return List.of(
-                new Ride(1, passengerWithIdAndIsDeleted(passengerIdes.get(0), false),
-                        driverWithIdAndIsDeleted(driverIdes.get(0), false),
+                new Ride(1, "1",
+                        1L,
                         "Nezavisimosty 1", "Nezavisimosty 2", RideStatus.CREATED,
                         LocalDateTime.of(2024, 10, 1, 12, 0, 0, 0),
                         100f, Currency.BYN),
-                new Ride(2, passengerWithIdAndIsDeleted(passengerIdes.get(1), false),
-                        driverWithIdAndIsDeleted(driverIdes.get(1), false),
+                new Ride(2, "2",
+                        2L,
                         "Nezavisimosty 3", "Nezavisimosty 4", RideStatus.CREATED,
                         LocalDateTime.of(2024, 10, 2, 12, 0, 0, 0),
                         100f, Currency.BYN)
@@ -126,7 +126,7 @@ public class RideControllerTest {
     @Test
     void getAllRidesByPassengerIdTest_ReturnsRides() {
         //given
-        long passengerId = 1;
+        String passengerId = "1";
         List<Ride> rides = defaultRides(List.of(1L, 1L), List.of(3L, 4L));
         doReturn(rides).when(rideService).getAllRidesByPassengerId(passengerId);
 
@@ -139,7 +139,7 @@ public class RideControllerTest {
         assertEquals(rides, responseEntity.getBody());
         verify(rideService).getAllRidesByPassengerId(passengerId);
         assertTrue(responseEntity.getBody().stream()
-                .allMatch(ride -> ride.getPassenger().getId() == passengerId));
+                .allMatch(ride -> ride.getPassengerId().equals(passengerId)));
     }
 
     @Test
@@ -158,18 +158,18 @@ public class RideControllerTest {
         assertEquals(rides, responseEntity.getBody());
         verify(rideService).getAllRidesByDriverId(driverId);
         assertTrue(responseEntity.getBody().stream()
-                .allMatch(ride -> ride.getDriver().getId() == driverId));
+                .allMatch(ride -> ride.getDriverId() == driverId));
     }
 
     @Test
     void saveRideTest_ReturnsSavedRide() {
-        RideDto rideDto = new RideDto(1L, 1L, "Nezavisimosty 1",
+        RideDto rideDto = new RideDto("1", 1L, "Nezavisimosty 1",
                 "Nezavisimosty 2", LocalDateTime.of(2024, 10, 3, 12, 0,
                 0, 0), 100F, Currency.BYN);
         Ride savedRide = rideMapper.fromRideDtoToRide(rideDto);
         savedRide.setId(1);
-        savedRide.setPassenger(passengerWithIdAndIsDeleted(1L, false));
-        savedRide.setDriver(driverWithIdAndIsDeleted(1L, false));
+        savedRide.setPassengerId("1");
+        savedRide.setDriverId(1L);
         doReturn(savedRide).when(rideService).saveRide(rideDto.passengerId(), rideDto.driverId(),
                 rideMapper.fromRideDtoToRide(rideDto));
 
@@ -180,21 +180,21 @@ public class RideControllerTest {
         assertNotNull(responseEntity.getBody());
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(savedRide, responseEntity.getBody());
-        verify(rideService).saveRide(1L, 1L, rideMapper.fromRideDtoToRide(rideDto));
+        verify(rideService).saveRide("1", 1L, rideMapper.fromRideDtoToRide(rideDto));
     }
 
     @Test
     void updateRideByIdTest_ReturnsUpdatedRide() {
         //given
         long rideId = 1;
-        RidePutDto ridePutDto = new RidePutDto(1L, 1L, "Nezavisimosty 1",
+        RidePutDto ridePutDto = new RidePutDto("1", 1L, "Nezavisimosty 1",
                 "Nezavisimosty 2", RideStatus.ACCEPTED,
                 LocalDateTime.of(2024, 10, 3, 12, 0,
                 0, 0), 100F, Currency.BYN);
         Ride updatingRide = rideMapper.fromRidePutDtoToRide(ridePutDto);
         updatingRide.setId(1);
-        updatingRide.setPassenger(passengerWithIdAndIsDeleted(1L, false));
-        updatingRide.setDriver(driverWithIdAndIsDeleted(1L, false));
+        updatingRide.setPassengerId("1");
+        updatingRide.setDriverId(1L);
         doReturn(updatingRide).when(rideService).updateRide(rideId,
                 ridePutDto.passengerId(), ridePutDto.driverId(),
                 rideMapper.fromRidePutDtoToRide(ridePutDto));
@@ -215,14 +215,14 @@ public class RideControllerTest {
     void patchRideByIdTest_ReturnsUpdatedRide() {
         //given
         long rideId = 1;
-        RidePatchDto ridePatchDto = new RidePatchDto(1L, 1L, "Nezavisimosty 1",
+        RidePatchDto ridePatchDto = new RidePatchDto("1", 1L, "Nezavisimosty 1",
                 "Nezavisimosty 2", RideStatus.ACCEPTED,
                 LocalDateTime.of(2024, 10, 3, 12, 0,
                         0, 0), 100F, Currency.BYN);
         Ride updatingRide = rideMapper.fromRidePatchDtoToRide(ridePatchDto);
         updatingRide.setId(1);
-        updatingRide.setPassenger(passengerWithIdAndIsDeleted(1L, false));
-        updatingRide.setDriver(driverWithIdAndIsDeleted(1L, false));
+        updatingRide.setPassengerId("1");
+        updatingRide.setDriverId(1L);
         doReturn(updatingRide).when(rideService).patchRide(rideId,
                 ridePatchDto.passengerId(), ridePatchDto.driverId(),
                 rideMapper.fromRidePatchDtoToRide(ridePatchDto));
@@ -278,7 +278,7 @@ public class RideControllerTest {
     @Test
     void deleteRideByPassengerIdTest_ReturnsVoid() {
         //given
-        long passengerId = 1;
+        String passengerId = "1";
         doNothing().when(rideService).deleteRideByPassengerId(passengerId);
         String result = "Rides with passenger id " + passengerId + " was successfully deleted.";
 

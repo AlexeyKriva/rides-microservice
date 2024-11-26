@@ -14,9 +14,15 @@ public class RideAccountDriverObserverImpl implements RideAccountObserver {
     @Override
     @Transactional
     public void updateBalance(Long driverId, RideAccount rideAccount) {
+        System.out.println("Driver");
         driverClient.increaseBalanceByDriverId(
                 driverId,
                 new DriverAccountBalanceUpDto(
                         rideAccount.getBalance() * BALANCE_FACTOR, rideAccount.getCurrency()));
+    }
+
+    @Override
+    public void updateBalance(String userId, RideAccount rideAccount) {
+
     }
 }
