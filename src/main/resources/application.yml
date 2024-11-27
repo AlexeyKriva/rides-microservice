@@ -28,6 +28,18 @@ spring:
         jwt:
           issuer-uri: ${KEYCLOAK_URI:http://localhost:8080/realms/cab-agg}
 
+  mail:
+    username: ${MAIL_USERNAME:test.modsen.software.newsletter@gmail.com}
+    password: ${MAIL_PASSWORD:uikz ilhl jnft fpoh}
+    host: smtp.gmail.com
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    port: 587
+
 eureka:
   client:
     service-url:
@@ -44,7 +56,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: 'prometheus, health'
+        include: 'prometheus, health, info, metrics, beans, caches, conditions, loggers, heapdump, threaddump, env'
   metrics:
     distribution:
       percentiles-histogram:

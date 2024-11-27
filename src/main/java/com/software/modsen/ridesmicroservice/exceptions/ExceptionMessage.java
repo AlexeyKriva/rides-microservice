@@ -20,4 +20,10 @@ public class ExceptionMessage {
 
     public static final String CANNOT_GET_DATA_MESSAGE = " For this reason you cannot get the data.";
     public static final String CANNOT_UPDATE_DATA_MESSAGE = " For this reason you cannot update the data.";
+    public static final String INVALID_REPORT_DATE_TYPE_MESSAGE = "{\"error:\" \"%s invalid date type. You can use only " +
+            "before, after or between.\"}";
+    public static final String INVALID_REPORT_TYPE_MESSAGE = "{\"error:\" \"%s invalid report type. You can use only " +
+            "excel.\"}";
+    public static final String REPORT_GENERATE_ERROR_MESSAGE = "{\"error:\" \"Error when generating report.\"}";
+    public static final String REPORT_SEND_ERROR_MESSAGE = "{\"error:\" \"Error when sending report to %s.\"}";
 }

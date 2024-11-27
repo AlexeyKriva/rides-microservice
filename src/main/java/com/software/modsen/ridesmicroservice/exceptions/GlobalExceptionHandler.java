@@ -1,6 +1,7 @@
 package com.software.modsen.ridesmicroservice.exceptions;
 
 import feign.FeignException;
+import jakarta.mail.MessagingException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -92,5 +93,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DatabaseConnectionRefusedException.class)
     public ResponseEntity<String> pSQLExceptionHandler(DatabaseConnectionRefusedException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ReportGenerateException.class)
+    public ResponseEntity<String> reportGenerateExceptionHandler(ReportGenerateException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InvalidReportTypeException.class)
+    public ResponseEntity<String> invalidReportTypeExceptionHandler(InvalidReportTypeException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidReportDateTypeException.class)
+    public ResponseEntity<String> invalidReportDateTypeExceptionHandler(InvalidReportDateTypeException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<String> messagingExceptionHandler(MessagingException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
